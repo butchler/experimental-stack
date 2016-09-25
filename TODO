@@ -1,0 +1,12 @@
+* Set up eslint.
+* Use a preprocessor like PreCSS to reduce duplication in CSS.
+* Make cards have a fixed number of columns, determined when game, starts so
+  that the card positions won't change if the user resizes their window in the
+  middle of the game.
+* Add animation when game starts/ends (such as cards flying in/out).
+* Play sound effects when game starts/ends.
+* Add decoration to backs of cards to make them look more like cards.
+* Use owl.svg logo somewhere. (Maybe on the back of the cards?)
+* Make it mobile friendly.
+* Keep track of player's best time and best # attempts so far (via localStorage).
+* Reimplement with Redux to compare Mobx vs. Redux.

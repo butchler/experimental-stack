@@ -1,0 +1,32 @@
+.results h2 {
+    margin-top: 2em;
+}
+
+.results-time label, .results-attempts label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.results-time, .results-attempts {
+    padding: 0.5em;
+}
+
+.results-items {
+    text-align: center;
+
+    margin: 2em auto;
+}
+
+.results-items td, .results-items th {
+    padding: 0.5em 1em;
+}
+.results-items thead {
+    border-bottom: 1px solid white;
+}
+.results-items td, .results-items th {
+    border-right: 1px solid white;
+}
+.results-items td:last-child, .results-items th:last-child {
+    border-right: none;
+}

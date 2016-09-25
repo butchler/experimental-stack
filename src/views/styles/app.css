@@ -1,0 +1,18 @@
+.app {
+    text-align: center;
+}
+
+.app-module {
+    width: 30em;
+    margin: 1em auto;
+
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15) inset;
+
+    padding: 2em;
+
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    background-color: #3F6CCE;
+}

@@ -1,0 +1,24 @@
+.game-info {
+    display: inline-block;
+    margin: 0 auto;
+    margin-bottom: 1em;
+
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15) inset;
+
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    background-color: #3F6CCE;
+}
+
+.game-info label {
+    font-size: 14px;
+    display: block;
+}
+
+.game-time, .game-attempts {
+    display: inline-block;
+    padding: 0.5em 4em;
+    font-weight: bold;
+}

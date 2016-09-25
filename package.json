@@ -1,0 +1,48 @@
+{
+  "name": "adam_buechler_project",
+  "version": "1.0.0",
+  "description": "Memory game with Japanese/English words.",
+  "main": "index.html",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start ./karma.conf.js",
+    "build": "./node_modules/webpack/bin/webpack.js --progress -p --define 'process.env.NODE_ENV'='\"production\"'",
+    "dev-server": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline -d"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iknow/adam_buechler_project.git"
+  },
+  "author": "Adam Buechler",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iknow/adam_buechler_project/issues"
+  },
+  "homepage": "https://github.com/iknow/adam_buechler_project#readme",
+  "devDependencies": {
+    "autoprefixer": "^6.3.3",
+    "babel": "^6.5.2",
+    "babel-core": "^6.7.2",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-1": "^6.5.0",
+    "css-loader": "^0.23.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "jasmine": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-jasmine": "^0.3.8",
+    "karma-webpack": "^1.7.0",
+    "postcss-loader": "^0.8.2",
+    "style-loader": "^0.13.0",
+    "webpack": "^1.12.14",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "mobx": "^2.5.1",
+    "mobx-react": "^3.5.6",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}
