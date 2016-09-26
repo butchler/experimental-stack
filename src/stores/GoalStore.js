@@ -1,15 +1,25 @@
-import { observable, computed } from 'mobx';
+import { observable, action, asReference } from 'mobx';
 import { assert } from '../util';
 import { setGoalItems } from '../actions';
 
 // Represents the database of items from the goal API.
 export default class GoalStore {
-  // The goal items won't really change after we've loaded them, so we just
-  // need to observer whether or not they're loaded.
-  @observable isLoaded = false;
-  @observable items = null;
-
+  // Save the items as a reference so that it the entire tree doesn't get converted to observable
+  // objects.
+  @observable items = asReference(null);
   @observable errorMessage = null;
+
+  @action
+  dispatch({ type, error, payload }) {
+    if (type === setGoalItems.type) {
+      if (error) {
+        this.items = null;
+        this.errorMessage = payload;
+      } else {
+        this.items = payload;
+      }
+    }
+  }
 
   // TODO: Convert to Task
   constructor(goalUrl) {
@@ -31,18 +41,6 @@ export default class GoalStore {
     };
     request.open('GET', goalUrl);
     request.send();
-  }
-
-  @action
-  dispatch({ type, error, payload }) {
-    if (type === setGoalItems.type) {
-      if (error) {
-        this.items = null;
-        this.errorMessage = payload;
-      } else {
-        this.items = payload;
-      }
-    }
   }
 
   // TODO: Convert to action in game store.

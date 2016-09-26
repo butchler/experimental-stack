@@ -1,78 +1,79 @@
-import { observable, computed, autorun, transaction, when } from 'mobx';
+import { observable, action, computed, autorun, transaction, when } from 'mobx';
 
 import { SELECTION_DELAY, SHOW_RESULTS_DELAY } from '../constants';
 import * as dispatcher from '../dispatcher';
-import { flipCard, startGame, quitGame } from '../actions';
+import { flipCard, startGame, quitGame, updateGameTimer } from '../actions';
 import { assert } from '../util';
 
 import CardStore from './CardStore';
 
+export const MODE_DONE = 'done';
+export const MODE_IN_PROGRESS = 'in-progress';
+
 // Represents a game with a set of cards.
 export default class GameStore {
   @observable cards = null;
+  @observable mode = MODE_DONE;
+  @observable numAttempts = 0;
+  @observable firstCardSelected = null;
+  @observable secondCardSelected = null;
 
-  @action
-  dispatch({ type, payload }) {
-    if (type === startGame.type) {
-      this.cards = payload;
-      this.firstCardSelected = this.secondCardSelected = null;
-    } else if (type === quitGame.type) {
-      this.cards = null;
-      this.firstCardSelected = this.secondCardSelected = null;
-    } else if (type === flipCard.type) {
-      const card = this.cards[payload];
+  @observable timer = null;
 
-      if (this.firstCardSelected === null) {
-        this.firstCardSelected = card;
-      } else if (this.secondCardSelected === null) {
-        this.secondCardSelected = card;
+  isCardSelected(card) {
+    return card === this.firstCardSelected || card === this.secondCardSelected;
+  }
 
-        this.numAttempts += 1;
-      } else {
-        this.firstCardSelected = card;
-        this.secondCardSelected = null;
+  isCardFaceUp(card) {
+    return card.matchFound === true || this.isCardSelected(card);
+  }
+
+  //isCardCorrect(card) {
+    //return this.isCardSelected(card) && this.secondCardSelected !== null && this.secondCardSelected.matchFound;
+  //}
+
+  //isCardWrong(card) {
+    //return this.isCardSelected(card) && this.secondCardSelected !== null && !this.secondCardSelected.matchFound;
+  //}
+
+  @action dispatch(action) {
+    const { type, payload } = action;
+
+    if (this.mode === MODE_DONE) {
+      if (type === startGame.type) {
+        this.mode = MODE_IN_PROGRESS;
+        this.timer = new TimerStore();
+        this.cards = payload.map({ item, side }, new CardStore(item, side));
+        this.firstCardSelected = this.secondCardSelected = null;
+        this.numAttempts = 0;
       }
+    } else if (this.mode === MODE_IN_PROGRESS) {
+      if (type === quitGame.type) {
+        this.mode = MODE_DONE;
+        this.firstCardSelected = this.secondCardSelected = null;
+      } else if (type === flipCard.type) {
+        const card = this.cards[payload];
 
+        if (!this.isSelected(card)) {
+          if (this.firstCardSelected === null) {
+            this.firstCardSelected = card;
+          } else if (this.secondCardSelected === null) {
+            this.secondCardSelected = card;
 
-        if (this.isDone || card.isFaceUp) { return; }
-
-        transaction(() => {
-            // If the player has already selected another pair of cards, unselect
-            // them before selecting a new pair of cards.
-            if (this.secondCardSelected !== null) {
-                this.firstCardSelected = this.secondCardSelected = null;
-
-                // Make sure that the unselect timeout doesn't unselect the cards
-                // again if the player starts selecting other cards before the timeout.
-                if (this._unselectTimeout !== undefined) {
-                    clearTimeout(this._unselectTimeout);
-
-                    this._unselectTimeout = undefined;
-                }
+            // Check if cards match after the player has selected two cards.
+            if (this.firstCardSelected.item === this.secondCardSelected.item) {
+              this.firstCardSelected.matchFound = this.secondCardSelected.matchFound = true;
             }
 
-            if (this.firstCardSelected === null) {
-                // Select the first card if no card has been selected.
-                this.firstCardSelected = card;
-            } else {
-                // Select the second card.
-                this.secondCardSelected = card;
-
-                // Check if cards match after the player has selected two cards.
-                if (this.firstCardSelected.item === this.secondCardSelected.item) {
-                    this.firstCardSelected.matchFound = this.secondCardSelected.matchFound = true;
-                }
-
-                this.numAttempts += 1;
-
-                // TODO: Make into a Task
-                // Unselect cards after a delay.
-                this._unselectTimeout = setTimeout(() => {
-                    this.firstCardSelected = this.secondCardSelected = null;
-                }, SELECTION_DELAY);
-            }
-        });
-
+            this.numAttempts += 1;
+          } else {
+            this.firstCardSelected = card;
+            this.secondCardSelected = null;
+          }
+        }
+      } else if (type === updateGameTimer.type) {
+        this.timer.dispatch(action);
+      }
     }
   }
 
@@ -203,6 +204,7 @@ export default class GameStore {
 
                 this.numAttempts += 1;
 
+                // TODO: Make into a Task
                 // Unselect cards after a delay.
                 this._unselectTimeout = setTimeout(() => {
                     this.firstCardSelected = this.secondCardSelected = null;
