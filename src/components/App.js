@@ -4,7 +4,9 @@ import './styles/normalize.css';
 import './styles/base.css';
 import './styles/app.css';
 
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
+import LanguageSwitcher from 'components/LanguageSwitcher';
+import GoalLoader from 'components/GoalLoader';
 
 export default function App() {
   return (
@@ -20,11 +22,16 @@ export default function App() {
       </header>
 
       <div className="primary-content inner-container">
-        <Page />
+        <div className="app">
+          <GoalLoader />
+        </div>
       </div>
     </div>
   );
 }
+
+
+
 
 // Top level component.
 @observer

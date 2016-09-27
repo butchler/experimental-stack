@@ -1,10 +1,12 @@
 import { observable, computed, action } from 'mobx';
 import { setLanguage } from 'constants/actions';
 import { GoalLoaderStore } from 'components/GoalLoader';
+import { GameStarterStore } from 'components/GameStarter';
 
 export default class UiStore {
   @observable currentLanguage;
-  @observable goal = new GoalLoaderStore();
+  @observable goalLoader = new GoalLoaderStore();
+  @observable gameStarter = new GameStarterStore();
 
   @computed get strings() {
     return getStrings(this.currentLanguage);
@@ -15,6 +17,7 @@ export default class UiStore {
       this.currentLanguage = action.payload;
     }
 
-    this.goal.dispatch(action);
+    this.goalLoader.dispatch(action);
+    this.gameStarter.dispatch(action);
   }
 }

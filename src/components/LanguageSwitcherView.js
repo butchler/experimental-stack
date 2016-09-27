@@ -1,36 +1,36 @@
 import './styles/language-switcher.css';
 
-import { observer } from 'mobx-react';
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 
-import { LANGUAGES } from '../translations';
-import * as dispatcher from '../dispatcher';
-import { setLanguage } from '../actions';
+export default class LanguageSwitcherView extends Component {
+  constructor() {
+    super();
 
-@observer
-export default class LanguageSwitcherView extends React.Component {
-    constructor() {
-        super();
+    this.onChange = event => {
+      const languageCode = event.currentTarget.value;
 
-        this.switchLanguage = (event) => {
-            const languageCode = event.currentTarget.value;
+      this.props.setLanguage(languageCode);
+    };
+  }
 
-            dispatcher.dispatch(setLanguage.create(languageCode));
-        };
-    }
+  render() {
+    const { languages, currentLanguage } = this.props;
 
-    render() {
-        return <select
-                className="language-switcher"
-                value={this.props.store.currentLanguage}
-                onChange={this.switchLanguage}>
-            {LANGUAGES.map((language) => {
-                return <option
-                        value={language.code}
-                        key={language.code}>
-                    {language.name}
-                </option>;
-            })}
-        </select>;
-    }
+    return (
+      <select className="language-switcher" value={currentLanguage} onChange={this.onChange}>
+        {languages.map(({ code, name }) =>
+          <option value={code} key={code}>{name}</option>
+        )}
+      </select>
+    );
+  }
 }
+
+LanguageSwitcherView.propTypes = {
+  currentLanguage: PropTypes.string,
+  languages: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  })).isRequired,
+  setLanguage: PropTypes.func.isRequired,
+};

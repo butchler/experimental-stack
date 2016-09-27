@@ -6,14 +6,10 @@ import { assert } from '../util';
 
 import CardStore from './CardStore';
 
-export const MODE_DONE = 'done';
-export const MODE_STARTED = 'started';
-
 // Represents a game with a set of cards.
 export default class GameStore {
   @observable items = [];
   @observable cards = [];
-  @observable mode = MODE_DONE;
   @observable firstCardSelected;
   @observable secondCardSelected;
   @observable numAttempts = 0;
@@ -43,51 +39,45 @@ export default class GameStore {
   @action dispatch(action) {
     const { type, payload } = action;
 
-    if (this.mode === MODE_DONE) {
-      if (type === startGame.type) {
-        this.mode = MODE_STARTED;
-        this.items = payload.items.map(({ cue, response }) => new ItemStore(cue, response));
-        this.cards = payload.cards.map(({ itemIndex, side }) => new CardStore(this.items[itemIndex], side));
-        this.timer = new TimerStore();
-        this.firstCardSelected = this.secondCardSelected = undefined;
-        this.numAttempts = 0;
-      }
-    } else if (this.mode === MODE_STARTED) {
-      if (type === quitGame.type) {
-        // Reset all values when the user chooses to quit.
-        this.items = [];
-        this.cards = [];
-        this.mode = MODE_DONE;
-        this.firstCardSelected = this.secondCardSelected = undefined;
-        this.numAttempts = 0;
-        this.timer = undefined;
-      } else if (type === flipCard.type) {
-        const card = this.cards[payload];
+    if (type === startGame.type) {
+      this.items = payload.items.map(({ cue, response }) => new ItemStore(cue, response));
+      this.cards = payload.cards.map(({ itemIndex, side }) => new CardStore(this.items[itemIndex], side));
+      this.timer = new TimerStore();
+      this.firstCardSelected = this.secondCardSelected = undefined;
+      this.numAttempts = 0;
+    } else if (type === quitGame.type) {
+      // Reset all values when the user chooses to quit.
+      this.items = [];
+      this.cards = [];
+      this.firstCardSelected = this.secondCardSelected = undefined;
+      this.numAttempts = 0;
+      this.timer = undefined;
+    } else if (type === flipCard.type) {
+      const card = this.cards[payload];
 
-        // Don't do anything if the card is already selected.
-        if (!this.isSelected(card)) {
-          if (this.firstCardSelected === undefined) {
-            // If no cards are selected.
-            this.firstCardSelected = card;
-          } else if (this.secondCardSelected === undefined) {
-            // If one card is selected.
-            this.secondCardSelected = card;
+      // Don't do anything if the card is already selected.
+      if (!this.isSelected(card)) {
+        if (this.firstCardSelected === undefined) {
+          // If no cards are selected.
+          this.firstCardSelected = card;
+        } else if (this.secondCardSelected === undefined) {
+          // If one card is selected.
+          this.secondCardSelected = card;
 
-            // Check if cards match after the player has selected two cards.
-            if (this.firstCardSelected.item === this.secondCardSelected.item) {
-              this.firstCardSelected.item.matched = true;
-            }
-
-            this.numAttempts += 1;
-          } else {
-            // If two cards are selected.
-            this.firstCardSelected = card;
-            this.secondCardSelected = undefined;
+          // Check if cards match after the player has selected two cards.
+          if (this.firstCardSelected.item === this.secondCardSelected.item) {
+            this.firstCardSelected.item.matched = true;
           }
+
+          this.numAttempts += 1;
+        } else {
+          // If two cards are selected.
+          this.firstCardSelected = card;
+          this.secondCardSelected = undefined;
         }
-      } else if (type === updateGameTimer.type) {
-        this.timer.dispatch(action);
       }
+    } else if (type === updateGameTimer.type) {
+      this.timer.dispatch(action);
     }
   }
 
@@ -258,13 +248,6 @@ export default class GameStore {
                     disposeAutorun();
                     dispatcher.unregister(onGameEnd);
             }
-        });
-    }
-
-    showResultsAfterWin() {
-        // Show the results screen a second or so after winning the game.
-        when(() => this.isDone, () => {
-            setTimeout(() => this.showResults = true, SHOW_RESULTS_DELAY);
         });
     }
 }
