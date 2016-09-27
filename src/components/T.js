@@ -1,15 +1,18 @@
 import React, { PropTypes } from 'react';
 import { observer, inject } from 'mobx-react';
+import { getTranslation } from 'helpers/i18n';
 
-function T({ strings, children }) {
+function T({ getTranslation, children }) {
   const label = React.Children.only(children);
 
-  return strings[label];
+  return getTranslation(label);
 }
 
 T.propTypes = {
-  strings: PropTypes.objectOf(PropTypes.string).isRequired,
+  getTranslation: PropTypes.func.isRequired,
   children: PropTypes.string.isRequired,
 };
 
-export default inject(({ store }) => ({ strings: store.ui.strings }))(observer(T));
+export default inject(({ store }) => ({
+  getTranslation: label => getTranslation(store.ui.currentLanguage, label),
+}))(observer(T));

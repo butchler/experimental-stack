@@ -12,5 +12,3 @@ export default function GoalLoaderView({ errorMessage }) {
 GoalLoaderView.propTypes = {
   errorMessage: PropTypes.string,
 };
-
-export default GoalLoaderView;

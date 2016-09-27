@@ -4,6 +4,7 @@ import GameLoaderView from 'components/GameLoaderView';
 import { setGoalItems } from 'constants/actions';
 import { GOAL_URL } from 'constants/config';
 
+// Controller component
 @inject(({ store, dispatch }) => ({
   items: store.ui.goalLoader.items,
   errorMessage: store.ui.goalLoader.errorMessage,
@@ -41,6 +42,7 @@ export default class GoalLoader extends Component {
   }
 }
 
+// UI state store
 export class GoalLoaderStore {
   @observable items;
   @observable errorMessage;

@@ -3,15 +3,17 @@ import { observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { task, call, delay } from 'react-task';
 import { startGame, showResults } from 'constants/actions';
-import { NUM_ITEMS_EASY, NUM_ITEMS_MEDIUM, NUM_ITEMS_HARD, SHOW_RESULTS_DELAY } from 'constants/config';
+import { SHOW_RESULTS_DELAY } from 'constants/config';
 
+// Constants
 const NOT_STARTED = 'not-started';
 const STARTED = 'started';
 const RESULTS = 'results';
 
-function GameStarter({ mode, allItemsMatched, showResults, ...gameStarterProps }) {
+// Controller component
+function GameStarter({ mode, allItemsMatched, showResults }) {
   if (mode === NOT_STARTED) {
-    return <GameStarterView {...gameStarterProps} />;
+    return <GameStarterView />;
   } else if (mode === STARTED) {
     return (
       <div>
@@ -29,9 +31,6 @@ GameStarter.propTypes = {
   mode: PropTypes.string.isRequired,
   allItemsMatched: PropTypes.bool.isRequired,
   showResults: PropTypes.func.isRequired,
-  startEasy: PropTypes.func.isRequired,
-  startMedium: PropTypes.func.isRequired,
-  startHard: PropTypes.func.isRequired,
 };
 
 export default inject(({ store, dispatch }) => {
@@ -39,12 +38,10 @@ export default inject(({ store, dispatch }) => {
     mode: store.ui.gameStarter.mode,
     allItemsMatched: store.game.allItemsMatched,
     showResults: () => dispatch(showResults()),
-    startEasy: () => dispatch(startGame(getRandomCards(NUM_ITEMS_EASY))),
-    startMedium: () => dispatch(startGame(getRandomCards(NUM_ITEMS_MEDIUM))),
-    startHard: () => dispatch(startGame(getRandomCards(NUM_ITEMS_HARD))),
   };
 })(observer(GameStarter));
 
+// UI state store
 export class GameStarterStore {
   @observable mode = NOT_STARTED;
 
@@ -57,6 +54,7 @@ export class GameStarterStore {
   }
 }
 
+// Asynchronous tasks
 function* showResultsAfterDelay(getProps) {
   yield call(delay(SHOW_RESULTS_DELAY));
   const { showResults } = yield call(getProps);
