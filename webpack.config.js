@@ -8,6 +8,9 @@ module.exports = {
         path: __dirname,
         filename: 'bundle.js'
     },
+    resolve: {
+      root: './src',
+    },
     module: {
         loaders: [
             { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },

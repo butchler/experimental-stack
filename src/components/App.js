@@ -4,19 +4,31 @@ import './styles/normalize.css';
 import './styles/base.css';
 import './styles/app.css';
 
-import { observer } from 'mobx-react';
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 
-import * as dispatcher from '../dispatcher';
-import { startGame, quitGame } from '../actions';
-import * as constants from '../constants';
+export default function App() {
+  return (
+    <div>
+      <header className="header">
+        <div className="inner-container">
+          <div className="logo-iknow"></div>
 
-import GameView from './GameView';
-import ResultsView from './ResultsView';
+          <div id="language-switcher-container">
+            <LanguageSwitcher />
+          </div>
+        </div>
+      </header>
+
+      <div className="primary-content inner-container">
+        <Page />
+      </div>
+    </div>
+  );
+}
 
 // Top level component.
 @observer
-export default class AppView extends React.Component {
+export default class App extends Component {
     constructor() {
         super();
 
@@ -90,27 +102,11 @@ export default class AppView extends React.Component {
     }
 }
 
-// Nested shapes in propTypes doesn't seem to be working.
-// The following propTypes should cause a warning to be displayed because of
-// the BOGUS required property in store.game, but it doesn't show anything:
-/*AppView.propTypes = {
-    store: React.PropTypes.shape({
-        game: React.PropTypes.shape({
-            showResults: React.PropTypes.bool.isRequired,
-            BOGUS: React.PropTypes.bool.isRequired
-        }),
-        goal: React.PropTypes.shape({
-            isLoaded: React.PropTypes.bool.isRequired
-        }),
-        strings: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
-    })
-};*/
-
 // For now, just use shallow propTypes.
-AppView.propTypes = {
-    store: React.PropTypes.shape({
-        game: React.PropTypes.object,
-        goal: React.PropTypes.object.isRequired,
-        strings: React.PropTypes.objectOf(React.PropTypes.string).isRequired
-    })
+App.propTypes = {
+  store: PropTypes.shape({
+    game: PropTypes.object,
+    goal: PropTypes.object.isRequired,
+    strings: PropTypes.objectOf(PropTypes.string).isRequired
+  })
 };

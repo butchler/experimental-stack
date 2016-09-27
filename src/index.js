@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppStore from './stores/AppStore';
-import AppView from './views/AppView';
-import LanguageSwitcherView from './views/LanguageSwitcherView';
+import { Provider } from 'mobx-react';
+import AppStore from 'stores/AppStore';
+import App from 'components/App';
 
 const store = new AppStore();
 
-ReactDOM.render(
-        <AppView store={store} />,
-        document.getElementById('app-container')
-);
+window.actions = [];
+function dispatch(action) {
+  window.actions.push(action);
+  store.dispatch(action);
+}
 
 ReactDOM.render(
-        <LanguageSwitcherView store={store} />,
-        document.getElementById('language-switcher-container')
+  <Provider store={store} dispatch={dispatch}>
+    <App />
+  </Provider>,
+  document.getElementById('app-container')
 );

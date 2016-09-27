@@ -1,32 +1,36 @@
 import { observable, action, computed, autorun, transaction, when } from 'mobx';
 
 import { SELECTION_DELAY, SHOW_RESULTS_DELAY } from '../constants';
-import * as dispatcher from '../dispatcher';
 import { flipCard, startGame, quitGame, updateGameTimer } from '../actions';
 import { assert } from '../util';
 
 import CardStore from './CardStore';
 
 export const MODE_DONE = 'done';
-export const MODE_IN_PROGRESS = 'in-progress';
+export const MODE_STARTED = 'started';
 
 // Represents a game with a set of cards.
 export default class GameStore {
-  @observable cards = null;
+  @observable items = [];
+  @observable cards = [];
   @observable mode = MODE_DONE;
+  @observable firstCardSelected;
+  @observable secondCardSelected;
   @observable numAttempts = 0;
-  @observable firstCardSelected = null;
-  @observable secondCardSelected = null;
-
-  @observable timer = null;
+  @observable timer;
 
   isCardSelected(card) {
     return card === this.firstCardSelected || card === this.secondCardSelected;
   }
 
-  isCardFaceUp(card) {
-    return card.matchFound === true || this.isCardSelected(card);
+  @computed get allItemsMatched() {
+    return this.items.every(item => item.matched);
   }
+
+  // TODO: Move these to controller components.
+  //isCardFaceUp(card) {
+    //return card.matchFound === true || this.isCardSelected(card);
+  //}
 
   //isCardCorrect(card) {
     //return this.isCardSelected(card) && this.secondCardSelected !== null && this.secondCardSelected.matchFound;
@@ -41,34 +45,44 @@ export default class GameStore {
 
     if (this.mode === MODE_DONE) {
       if (type === startGame.type) {
-        this.mode = MODE_IN_PROGRESS;
+        this.mode = MODE_STARTED;
+        this.items = payload.items.map(({ cue, response }) => new ItemStore(cue, response));
+        this.cards = payload.cards.map(({ itemIndex, side }) => new CardStore(this.items[itemIndex], side));
         this.timer = new TimerStore();
-        this.cards = payload.map({ item, side }, new CardStore(item, side));
-        this.firstCardSelected = this.secondCardSelected = null;
+        this.firstCardSelected = this.secondCardSelected = undefined;
         this.numAttempts = 0;
       }
-    } else if (this.mode === MODE_IN_PROGRESS) {
+    } else if (this.mode === MODE_STARTED) {
       if (type === quitGame.type) {
+        // Reset all values when the user chooses to quit.
+        this.items = [];
+        this.cards = [];
         this.mode = MODE_DONE;
-        this.firstCardSelected = this.secondCardSelected = null;
+        this.firstCardSelected = this.secondCardSelected = undefined;
+        this.numAttempts = 0;
+        this.timer = undefined;
       } else if (type === flipCard.type) {
         const card = this.cards[payload];
 
+        // Don't do anything if the card is already selected.
         if (!this.isSelected(card)) {
-          if (this.firstCardSelected === null) {
+          if (this.firstCardSelected === undefined) {
+            // If no cards are selected.
             this.firstCardSelected = card;
-          } else if (this.secondCardSelected === null) {
+          } else if (this.secondCardSelected === undefined) {
+            // If one card is selected.
             this.secondCardSelected = card;
 
             // Check if cards match after the player has selected two cards.
             if (this.firstCardSelected.item === this.secondCardSelected.item) {
-              this.firstCardSelected.matchFound = this.secondCardSelected.matchFound = true;
+              this.firstCardSelected.item.matched = true;
             }
 
             this.numAttempts += 1;
           } else {
+            // If two cards are selected.
             this.firstCardSelected = card;
-            this.secondCardSelected = null;
+            this.secondCardSelected = undefined;
           }
         }
       } else if (type === updateGameTimer.type) {
