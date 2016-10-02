@@ -1,9 +1,12 @@
 import React, { PropTypes } from 'react';
 import { observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
-import { task, call, delay } from 'react-task';
+import { withTasks, task, call, delay } from 'react-task';
 import { startGame, showResults } from 'constants/actions';
 import { SHOW_RESULTS_DELAY } from 'constants/config';
+import GameStarterView from 'components/GameStarterView';
+import Game from 'components/Game';
+import GameResults from 'components/GameResults';
 
 // Constants
 const NOT_STARTED = 'not-started';
@@ -15,13 +18,7 @@ function GameStarter({ mode, allItemsMatched, showResults }) {
   if (mode === NOT_STARTED) {
     return <GameStarterView />;
   } else if (mode === STARTED) {
-    return (
-      <div>
-        <Game />
-
-        {allItemsMatched && <ShowResultsTask showResults={showResults} />}
-      </div>
-    );
+    return <Game />;
   } else if (mode === RESULTS) {
     return <GameResults {...gameStarterProps} />;
   }
@@ -33,13 +30,24 @@ GameStarter.propTypes = {
   showResults: PropTypes.func.isRequired,
 };
 
+// Asynchronous tasks
+const gameStarterTasks = withTasks(({ allItemsMatched, showResults }) => [
+  allItemsMatched && task(showResultsAfterDelay, { showResults }),
+]);
+
+function* showResultsAfterDelay(getProps) {
+  yield call(delay, SHOW_RESULTS_DELAY);
+  getProps().showResults();
+}
+
+// State injector
 export default inject(({ store, dispatch }) => {
   return {
     mode: store.ui.gameStarter.mode,
     allItemsMatched: store.game.allItemsMatched,
     showResults: () => dispatch(showResults()),
   };
-})(observer(GameStarter));
+})(observer(gameStarterTasks(GameStarter)));
 
 // UI state store
 export class GameStarterStore {
@@ -53,16 +61,3 @@ export class GameStarterStore {
     }
   }
 }
-
-// Asynchronous tasks
-function* showResultsAfterDelay(getProps) {
-  yield call(delay(SHOW_RESULTS_DELAY));
-  const { showResults } = yield call(getProps);
-  yield call(showResults);
-}
-
-const ShowResultsTask = task(showResultsAfterDelay);
-
-ShowResultsTask.propTypes = {
-  showResults: PropTypes.func.isRequired,
-};

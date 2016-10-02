@@ -8,6 +8,7 @@ export default class TimerStore {
     return Math.floor(this.millisecondsElapsed / 1000);
   }
 
+  // Formats the game.millisecondsElapsed as a "minutes:seconds" string.
   @computed get string() {
     const secondsElapsed = this.seconds;
     const minutes = Math.floor(secondsElapsed / 60);

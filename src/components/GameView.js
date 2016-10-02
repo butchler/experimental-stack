@@ -1,33 +1,30 @@
 import './styles/game.css';
 
-import { observer } from 'mobx-react';
-import React from 'react';
-
+import React, { PropTypes } from 'react';
 import CardView from './CardView';
+import T from 'components/T';
 
-@observer
-export default class GameView extends React.Component {
-    render() {
-        const { game, strings } = this.props.store;
+export default function GameView({ timeElapsed, numAttempts, cards }) {
+  return (
+    <div className="game">
 
-        return <div className="game">
+      <div className="game-info">
+        <span className="game-time"><label><T>timeElapsed</T></label> {timeElapsed}</span>
+        <span className="game-attempts"><label><T>attemptsMade</T></label> {numAttempts}</span>
+      </div>
 
-            <div className="game-info">
-                <span className="game-time"><label>{strings.timeElapsed}</label> {game.timeElapsedString}</span>
-                <span className="game-attempts"><label>{strings.attemptsMade}</label> {game.numAttempts}</span>
-            </div>
+      <div className="game-cards">
+        {cards.map(card => <CardView card={card} key={card.id} />)}
+      </div>
 
-            <div className="game-cards">
-                {game.cards.map((card) => <CardView card={card} key={card.key} />)}
-            </div>
-
-        </div>;
-    }
+    </div>
+  );
 }
 
 GameView.propTypes = {
-    store: React.PropTypes.shape({
-        game: React.PropTypes.object.isRequired,
-        strings: React.PropTypes.objectOf(React.PropTypes.string).isRequired
-    })
+  timeElapsed: PropTypes.string.isRequired,
+  numAttempts: PropTypes.number.isRequired,
+  cards: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.any.isRequired,
+  })),
 };

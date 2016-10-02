@@ -1,7 +1,7 @@
 import { observable, action, computed, autorun, transaction, when } from 'mobx';
 
 import { SELECTION_DELAY, SHOW_RESULTS_DELAY } from '../constants';
-import { flipCard, startGame, quitGame, updateGameTimer } from '../actions';
+import { flipCard, unflipCards, startGame, quitGame, updateGameTimer } from '../actions';
 import { assert } from '../util';
 
 import CardStore from './CardStore';
@@ -75,6 +75,8 @@ export default class GameStore {
           this.firstCardSelected = card;
           this.secondCardSelected = undefined;
         }
+      } else if (type === unflipCards.type) {
+        this.firstCardSelected = this.secondCardSelected = undefined;
       }
     } else if (type === updateGameTimer.type) {
       this.timer.dispatch(action);
@@ -102,15 +104,6 @@ export default class GameStore {
 
     @computed get isMatchWrong() {
         return this.secondCardSelected !== null && !this.secondCardSelected.matchFound;
-    }
-
-    // Formats the game.millisecondsElapsed as a "minutes:seconds" string.
-    @computed get timeElapsedString() {
-        const secondsElapsed = Math.floor(this.millisecondsElapsed / 1000);
-        const minutes = Math.floor(secondsElapsed / 60);
-        const seconds = secondsElapsed % 60;
-
-        return minutes + ':' + (seconds < 10 ? '0' + seconds : seconds);
     }
 
     constructor(items) {
@@ -142,112 +135,5 @@ export default class GameStore {
             const randomIndex = i + Math.floor(Math.random() * (this.cards.length - i));
             [this.cards[i], this.cards[randomIndex]] = [this.cards[randomIndex], this.cards[i]];
         }
-    }
-
-    initTimer() {
-        // Updates number of seconds since the game has started.
-        const timeStarted = window.performance.now();
-        const updateElapsedTime = () => {
-            if (!this.isDone) {
-                this.millisecondsElapsed = window.performance.now() - timeStarted;
-                setTimeout(updateElapsedTime, 10);
-            }
-        };
-        setTimeout(updateElapsedTime, 10);
-    }
-
-    initActionHandlers() {
-        // Handle flipCard action.
-        const flipCardHandler = dispatcher.register((action) => {
-            if (action.type === flipCard.type) {
-                this.selectCard(action.card)
-            }
-        });
-
-        // Unregister the action listener for the flipCard event when the game
-        // is quit or a new game is started.
-        const onGameEnd = dispatcher.register((action) => {
-            switch (action.type) {
-                case startGame.type:
-                case quitGame.type:
-                    dispatcher.unregister(flipCardHandler);
-                    dispatcher.unregister(onGameEnd);
-            }
-        });
-    }
-
-    selectCard(card) {
-        if (this.isDone || card.isFaceUp) { return; }
-
-        transaction(() => {
-            // If the player has already selected another pair of cards, unselect
-            // them before selecting a new pair of cards.
-            if (this.secondCardSelected !== null) {
-                this.firstCardSelected = this.secondCardSelected = null;
-
-                // Make sure that the unselect timeout doesn't unselect the cards
-                // again if the player starts selecting other cards before the timeout.
-                if (this._unselectTimeout !== undefined) {
-                    clearTimeout(this._unselectTimeout);
-
-                    this._unselectTimeout = undefined;
-                }
-            }
-
-            if (this.firstCardSelected === null) {
-                // Select the first card if no card has been selected.
-                this.firstCardSelected = card;
-            } else {
-                // Select the second card.
-                this.secondCardSelected = card;
-
-                // Check if cards match after the player has selected two cards.
-                if (this.firstCardSelected.item === this.secondCardSelected.item) {
-                    this.firstCardSelected.matchFound = this.secondCardSelected.matchFound = true;
-                }
-
-                this.numAttempts += 1;
-
-                // TODO: Make into a Task
-                // Unselect cards after a delay.
-                this._unselectTimeout = setTimeout(() => {
-                    this.firstCardSelected = this.secondCardSelected = null;
-                }, SELECTION_DELAY);
-            }
-        });
-    }
-
-    playWordIfCorrect() {
-        // Start loading audio for each item.
-        const preloadedAudio = {};
-        for (let i = 0; i < this.items.length; i++) {
-            const item = this.items[i];
-
-            if (item.sound) {
-                preloadedAudio[item.item.id] = new Audio(item.sound);
-            }
-        }
-
-        // Automatically play the sound for the item when the user matches two
-        // cards correctly.
-        const disposeAutorun = autorun(() => {
-            if (this.isMatchCorrect) {
-                const itemId = this.firstCardSelected.item.item.id;
-
-                if (preloadedAudio[itemId] !== undefined) {
-                    preloadedAudio[itemId].play();
-                }
-            }
-        });
-
-        // Dispose of autorun when game ends or a new game is started.
-        const onGameEnd = dispatcher.register((action) => {
-            switch (action.type) {
-                case startGame.type:
-                case quitGame.type:
-                    disposeAutorun();
-                    dispatcher.unregister(onGameEnd);
-            }
-        });
     }
 }
