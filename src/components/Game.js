@@ -5,13 +5,17 @@ import { SELECTION_DELAY } from 'constants/config';
 import { unflipCards, updateGameTimer } from 'constants/actions';
 
 // Asynchronous tasks
-const gameTasks = withTasks(({ unflipCards, firstCard, secondCard, updateTimer }) => [
+const gameTasks = withTasks(({
+  unflipCards, firstCard, secondCard, updateTimer, items, lastItemMatched
+}) => [
   !!firstCard && !!secondCard && task(unflipCardsAfterDelay, {
     key: `${firstCard.id}-${secondCard.id}`,
     unflipCards,
   }),
-  !!gameOver && task(tickTimer, { updateTimer }),
+  task(tickTimer, { updateTimer }),
   task(playCorrectItems, { firstCard, secondCard }),
+  // TODO: Task to preload sounds.
+  lastItemMatched && task(playItemSound, { key: lastItemMatched.id, item: lastItemMatched }),
 ]);
 
 function* unflipCardsAfterDelay(getProps) {
@@ -30,36 +34,16 @@ function* tickTimer(getProps) {
   }
 }
 
-function createAudio(url) {
-  return new Audio(url);
-}
-
-function playAudio(audio) {
+function playSound(url) {
+  const audio = new Audio(url);
   audio.play();
 }
 
-function* playCorrectItems(getProps) {
-  // Start loading audio for each item.
-  const audio = {};
-  const items = getProps().items;
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
+function* playItemSound(getProps) {
+  const { item } = getProps();
 
-    if (item.sound) {
-      audio[item.sound] = yield call(createAudio, item.sound);
-    }
-  }
-
-  while (true) {
-    // Wait until a card is correctly matched.
-    const { firstCard } = yield waitProps(
-      ({ firstCard }) => getProps().getItemForCard(firstCard).matched
-    );
-
-    const item = getProps().getItemForCard(firstCard);
-    if (audio[item.sound]) {
-      yield call(playAudio, audio[item.sound]);
-    }
+  if (item.sound) {
+    yield call(playSound, item.sound);
   }
 }
 
@@ -70,6 +54,7 @@ export default inject(({ store, dispatch }) => ({
   numAttempts: store.game.numAttempts,
   cards: store.game.cards,
   items: store.game.items,
+  lastItemMatched: store.game.lastItemMatched,
   unflipCards: () => dispatch(unflipCards),
   updateTimer: ms => dispatch(updateTimer, ms),
 }))(observer(gameTasks(GameView)));

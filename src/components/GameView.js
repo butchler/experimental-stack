@@ -1,7 +1,7 @@
 import './styles/game.css';
 
 import React, { PropTypes } from 'react';
-import CardView from './CardView';
+import Card from './Card';
 import T from 'components/T';
 
 export default function GameView({ timeElapsed, numAttempts, cards }) {
@@ -14,7 +14,7 @@ export default function GameView({ timeElapsed, numAttempts, cards }) {
       </div>
 
       <div className="game-cards">
-        {cards.map(card => <CardView card={card} key={card.id} />)}
+        {cards.map(card => <Card card={card} key={card.id} />)}
       </div>
 
     </div>

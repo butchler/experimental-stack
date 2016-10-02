@@ -11,9 +11,9 @@ export default class UiStore {
   @action dispatch(action) {
     if (action.type === setLanguage.type) {
       this.currentLanguage = action.payload;
+    } else {
+      this.goalLoader.dispatch(action);
+      this.gameStarter.dispatch(action);
     }
-
-    this.goalLoader.dispatch(action);
-    this.gameStarter.dispatch(action);
   }
 }

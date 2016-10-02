@@ -19,8 +19,4 @@ export default class CardStore {
   @computed get text() {
     return this.item[this.side];
   }
-
-  @computed get matched() {
-    return this.item.matched;
-  }
 }
