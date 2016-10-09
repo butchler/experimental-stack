@@ -1,0 +1,65 @@
+import React, { PropTypes } from 'react';
+import { observable, action } from 'mobx';
+import { withTasks, task, call, delay } from 'react-task';
+import injector from 'helpers/injector';
+import { startGame, showResults, quitGame } from 'constants/actions';
+import { SHOW_RESULTS_DELAY } from 'constants/config';
+import Game from 'components/game/Game';
+import GameResults from 'components/game-launcher/GameResults';
+import GameLauncherView from './GameLauncherView';
+
+// Constants
+const NOT_STARTED = 'not-started';
+const STARTED = 'started';
+const RESULTS = 'results';
+
+// UI state store
+export class GameLauncherStore {
+  @observable mode = NOT_STARTED;
+
+  @action dispatch(action) {
+    if (action.type === startGame) {
+      this.mode = STARTED;
+    } else if (action.type === showResults) {
+      this.mode = RESULTS;
+    } else if (action.type === quitGame) {
+      this.mode = NOT_STARTED;
+    }
+  }
+}
+
+// State injector
+export default injector(({ store, dispatch }) => ({
+  mode: store.ui.gameLauncher.mode,
+  allItemsMatched: store.game.allItemsMatched,
+  showResults: () => dispatch(showResults()),
+}))(withTasks(mapPropsToTasks)(GameLauncher));
+
+// Asynchronous tasks
+function mapPropsToTasks({ allItemsMatched, showResults }) {
+  return [
+    allItemsMatched && task(showResultsAfterDelay, { showResults }),
+  ];
+}
+
+function* showResultsAfterDelay(getProps) {
+  yield call(delay, SHOW_RESULTS_DELAY);
+  getProps().showResults();
+}
+
+// Controller component
+function GameLauncher({ mode, allItemsMatched, showResults }) {
+  if (mode === NOT_STARTED) {
+    return <GameLauncherView />;
+  } else if (mode === STARTED) {
+    return <Game />;
+  } else if (mode === RESULTS) {
+    return <GameResults />;
+  }
+}
+
+GameLauncher.propTypes = {
+  mode: PropTypes.string.isRequired,
+  allItemsMatched: PropTypes.bool.isRequired,
+  showResults: PropTypes.func.isRequired,
+};

@@ -1,10 +1,10 @@
-import { observer, inject } from 'mobx-react';
+import injector from 'helpers/injector';
 import { startGame } from 'constants/actions';
 import { NUM_ITEMS_EASY, NUM_ITEMS_MEDIUM, NUM_ITEMS_HARD } from 'constants/config';
 import { getRandomCards } from 'helpers/random';
-import StartGameButtonsView from 'components/StartGameButtonsView';
+import StartGameButtonsView from './StartGameButtonsView';
 
-export default inject(({ dispatch }) => {
+export default injector(({ store, dispatch }) => {
   const { items } = store.ui.goalLoader.goal;
 
   return {
@@ -12,4 +12,4 @@ export default inject(({ dispatch }) => {
     startMedium: () => dispatch(startGame(getRandomCards(NUM_ITEMS_MEDIUM, items))),
     startHard: () => dispatch(startGame(getRandomCards(NUM_ITEMS_HARD, items))),
   };
-})(observer(StartGameButtonsView));
+})(StartGameButtonsView);

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import T from 'components/T';
-import StartGameButtons from 'components/StartGameButtons';
+import StartGameButtons from 'components/game-launcher/StartGameButtons';
 
 export default function GameStarterView() {
   return (

@@ -1,6 +1,6 @@
 import { observable, action, computed } from 'mobx';
-import { flipCard, unflipCards, startGame, quitGame, updateGameTimer } from '../actions';
-import CardStore from './CardStore';
+import { flipCard, unflipCards, startGame, updateGameTimer } from 'constants/actions';
+import CardStore from 'stores/CardStore';
 
 // Represents a game with a set of cards.
 export default class GameStore {
@@ -26,26 +26,20 @@ export default class GameStore {
     if (type === startGame.type) {
       this.items = payload.items.map(({ cue, response }) => new ItemStore(cue, response));
       this.cards = payload.cards.map(({ itemIndex, side }) => new CardStore(this.items[itemIndex], side));
+      this.firstCardSelected = null;
+      this.secondCardSelected = null;
+      this.numAttempts = 0;
       this.timer = new TimerStore();
-      this.firstCardSelected = this.secondCardSelected = undefined;
-      this.numAttempts = 0;
-    } else if (type === quitGame.type) {
-      // Reset all values when the user chooses to quit.
-      this.items = [];
-      this.cards = [];
-      this.firstCardSelected = this.secondCardSelected = undefined;
-      this.numAttempts = 0;
-      this.timer = undefined;
-      this.lastItemMatched = undefined;
+      this.lastItemMatched = null;
     } else if (type === flipCard.type) {
       const card = this.cards[payload];
 
       // Don't do anything if the card is already selected.
       if (!this.isSelected(card)) {
-        if (this.firstCardSelected === undefined) {
+        if (!this.firstCardSelected) {
           // If no cards are selected.
           this.firstCardSelected = card;
-        } else if (this.secondCardSelected === undefined) {
+        } else if (!this.secondCardSelected) {
           // If one card is selected.
           this.secondCardSelected = card;
 
@@ -59,10 +53,10 @@ export default class GameStore {
         } else {
           // If two cards are selected.
           this.firstCardSelected = card;
-          this.secondCardSelected = undefined;
+          this.secondCardSelected = null;
         }
       } else if (type === unflipCards.type) {
-        this.firstCardSelected = this.secondCardSelected = undefined;
+        this.firstCardSelected = this.secondCardSelected = null;
       }
     } else if (type === updateGameTimer.type) {
       this.timer.dispatch(action);

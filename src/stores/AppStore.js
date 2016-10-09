@@ -1,7 +1,7 @@
-import { observable } from 'mobx';
-import UiStore from './UiStore';
-import GoalStore from './GoalStore';
-import GameStore from './GameStore';
+import { observable, action } from 'mobx';
+import UiStore from 'stores/UiStore';
+import GoalStore from 'stores/GoalStore';
+import GameStore from 'stores/GameStore';
 
 // Top level store for the app.
 export default class AppStore {

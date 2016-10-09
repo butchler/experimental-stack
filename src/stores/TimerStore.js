@@ -1,5 +1,5 @@
 import { observable, computed, action } from 'mobx';
-import { updateGameTimer } from '../actions';
+import { updateGameTimer } from 'constants/actions';
 
 export default class TimerStore {
   @observable millisecondsElapsed = 0;

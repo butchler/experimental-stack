@@ -1,12 +1,10 @@
-import { observer, inject } from 'mobx-react';
-import { LANGUAGES } from 'constants/translations';
-import { setLanguage } from 'constnats/actions';
-import LanguageSwitcherView from 'components/LanguageSwitcherView';
+import injector from 'helpers/injector';
+import { LANGUAGES } from 'constants/i18n';
+import { setLanguage } from 'constants/actions';
+import LanguageSwitcherView from './LanguageSwitcherView';
 
-export default inject(({ store, dispatch }) => {
-  return {
-    currentLanguage: store.ui.currentLanguage,
-    languages: LANGUAGES,
-    setLanguage: languageCode => dispatch(setLanguage(languageCode)),
-  };
-})(observer(LanguageSwitcherView));
+export default injector(({ store, dispatch }) => ({
+  currentLanguage: store.ui.currentLanguage,
+  languages: LANGUAGES,
+  setLanguage: languageCode => dispatch(setLanguage(languageCode)),
+}))(LanguageSwitcherView);

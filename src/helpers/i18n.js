@@ -1,8 +1,9 @@
-import { assert } from './util';
 import { STRINGS, DEFAULT_LANGUAGE } from 'constants/i18n';
 
 export function getTranslation(languageCode, label) {
-  assert(typeof languageCode === 'string', "languageCode must be a string");
+  if (typeof languageCode !== 'string') {
+   throw new TypeError("languageCode must be a string");
+  }
 
   if (STRINGS.hasOwnProperty(label)) {
     const string = STRINGS[label];

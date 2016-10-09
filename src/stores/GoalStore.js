@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import { setGoalItems } from '../actions';
+import { setGoalItems } from 'constants/actions';
 
 export default class GoalStore {
   @observable items;

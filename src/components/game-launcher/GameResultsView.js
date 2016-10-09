@@ -2,10 +2,12 @@ import './styles/results.css';
 
 import React, { PropTypes } from 'react';
 import T from 'components/T';
-import StartGameButtons from 'components/StartGameButtons';
+import StartGameButtons from 'components/game-launcher/StartGameButtons';
 
+/**
+ * Show the time elapsed, attempts made, and the list of items that appeared in the game.
+ */
 export default function GameResultsView({ timeElapsed, numAttempts, items }) {
-  // Show the time elapsed, attempts made, and the list of items that appeared in the game.
   return (
     <div className="app-module">
       <div className="results">
