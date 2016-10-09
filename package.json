@@ -49,6 +49,6 @@
     "mobx-react": "^3.5.6",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-task": "^3.0.1"
+    "react-task": "^4.0.2"
   }
 }
