@@ -9,13 +9,6 @@ import GameLauncher from 'components/game-launcher/GameLauncher';
 import GoalLoaderView from './GoalLoaderView';
 
 // Controller component
-export default injector(({ store, dispatch }) => ({
-  goalLoaded: !!store.ui.goalLoader.items,
-  errorMessage: store.ui.goalLoader.errorMessage,
-  onSuccess: items => dispatch(setGoalItems(items)),
-  onError: message => dispatch(asError(setGoalItems.type, message)),
-}))(GoalLoader);
-
 class GoalLoader extends React.Component {
   componentDidMount() {
     if (this.props.goalLoaded) {
@@ -93,3 +86,10 @@ function parseGoalItems(goalJSON) {
     { cue: 'cat', response: 'gato' },
   ];
 }
+
+export default injector(({ store, dispatch }) => ({
+  goalLoaded: !!store.ui.goalLoader.items,
+  errorMessage: store.ui.goalLoader.errorMessage,
+  onSuccess: items => dispatch(setGoalItems(items)),
+  onError: message => dispatch(asError(setGoalItems.type, message)),
+}))(GoalLoader);

@@ -11,6 +11,7 @@ import { DEFAULT_LANGUAGE } from 'constants/i18n';
 const store = new AppStore();
 
 window.actions = [];
+window.store = store;
 function dispatch(action) {
   window.actions.push(action);
   store.dispatch(action);

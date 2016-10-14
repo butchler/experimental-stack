@@ -37,7 +37,7 @@ function getRandomItems(numItems, goalItems) {
     // Randomly swap the current item with another item after it in the list
     // (possibly swapping it with itself/keeping it in the same place).
     const randomIndex = swapIndex + Math.floor(Math.random() * (items.length - swapIndex));
-    [items[i], items[randomIndex]] = [items[randomIndex], items[i]];
+    [items[swapIndex], items[randomIndex]] = [items[randomIndex], items[swapIndex]];
 
     // Add the current item to the result list.
     randomItems.push(items[swapIndex]);

@@ -3,9 +3,7 @@ import injector from 'helpers/injector';
 import getTranslation from 'helpers/i18n';
 
 function T({ translate, children }) {
-  const label = React.Children.only(children);
-
-  return <span>{translate(label)}</span>;
+  return <span>{translate(children)}</span>;
 }
 
 T.propTypes = {

@@ -9,6 +9,8 @@ export default function injector(mapProps) {
       return React.createElement(WrappedComponent, newProps);
     }
 
-    return inject('store', 'dispatch', observer(Injector));
+    Injector.displayName = `Injector(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+
+    return inject('store', 'dispatch')(observer(Injector));
   };
 }

@@ -5,7 +5,7 @@ import getRandomCards from 'helpers/random';
 import StartGameButtonsView from './StartGameButtonsView';
 
 export default injector(({ store, dispatch }) => {
-  const { items } = store.ui.goalLoader.goal;
+  const { items } = store.ui.goalLoader;
 
   return {
     startEasy: () => dispatch(startGame(getRandomCards(NUM_ITEMS_EASY, items))),
