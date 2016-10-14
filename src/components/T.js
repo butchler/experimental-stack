@@ -5,7 +5,7 @@ import getTranslation from 'helpers/i18n';
 function T({ translate, children }) {
   const label = React.Children.only(children);
 
-  return translate(label);
+  return <span>{translate(label)}</span>;
 }
 
 T.propTypes = {

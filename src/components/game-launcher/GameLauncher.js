@@ -49,12 +49,12 @@ function* showResultsAfterDelay(getProps) {
 
 // Controller component
 function GameLauncher({ mode }) {
-  if (mode === NOT_STARTED) {
-    return <GameLauncherView />;
-  } else if (mode === STARTED) {
+  if (mode === STARTED) {
     return <Game />;
   } else if (mode === RESULTS) {
     return <GameResults />;
+  } else {
+    return <GameLauncherView />;
   }
 }
 
