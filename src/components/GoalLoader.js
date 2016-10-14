@@ -9,13 +9,14 @@ import GameLauncher from 'components/game-launcher/GameLauncher';
 import GoalLoaderView from './GoalLoaderView';
 
 // Controller component
-@injector(({ store, dispatch }) => ({
+export default injector(({ store, dispatch }) => ({
   goalLoaded: !!store.ui.goalLoader.items,
   errorMessage: store.ui.goalLoader.errorMessage,
   onSuccess: items => dispatch(setGoalItems(items)),
   onError: message => dispatch(asError(setGoalItems.type, message)),
-}))
-export default class GoalLoader extends React.Component {
+}))(GoalLoader);
+
+class GoalLoader extends React.Component {
   componentDidMount() {
     if (this.props.goalLoaded) {
       return;

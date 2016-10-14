@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer, inject } from 'mobx';
+import { observer, inject } from 'mobx-react';
 
 export default function injector(mapProps) {
   return (WrappedComponent) => {

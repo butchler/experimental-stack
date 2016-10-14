@@ -3,13 +3,13 @@ var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: __dirname + '/src/index.js',
     output: {
         path: __dirname,
         filename: 'bundle.js'
     },
     resolve: {
-      root: './src',
+      root: __dirname + '/src',
     },
     module: {
         loaders: [
