@@ -2,7 +2,7 @@
     margin-top: 2em;
 }
 
-.results-time label, .results-attempts label {
+.results-time .label, .results-attempts .label {
     display: block;
     font-weight: bold;
     margin-bottom: 0.5em;

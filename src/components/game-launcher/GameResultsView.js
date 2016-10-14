@@ -1,4 +1,4 @@
-import './styles/results.css';
+import 'components/game-launcher/styles/results.css';
 
 import React, { PropTypes } from 'react';
 import T from 'components/T';
@@ -14,11 +14,11 @@ export default function GameResultsView({ timeElapsed, numAttempts, items }) {
         <h1><T>youWon</T></h1>
 
         <div key="time" className="results-time">
-          <label><T>timeElapsed</T></label> {timeElapsed}
+          <span className="label"><T>timeElapsed</T></span> {timeElapsed}
         </div>
 
         <div key="attempts" className="results-attempts">
-          <label><T>attemptsMade</T></label> {numAttempts}
+          <span className="label"><T>attemptsMade</T></span> {numAttempts}
         </div>
 
         <h2><T>wordsMatched</T></h2>
@@ -50,10 +50,7 @@ export default function GameResultsView({ timeElapsed, numAttempts, items }) {
 }
 
 GameResultsView.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({
-    cue: PropTypes.string.isRequired,
-    response: PropTypes.string.isRequired,
-  })),
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeElapsed: PropTypes.string.isRequired,
   numAttempts: PropTypes.number.isRequired,
 };

@@ -1,7 +1,7 @@
 import injector from 'helpers/injector';
 import { startGame } from 'constants/actions';
 import { NUM_ITEMS_EASY, NUM_ITEMS_MEDIUM, NUM_ITEMS_HARD } from 'constants/config';
-import { getRandomCards } from 'helpers/random';
+import getRandomCards from 'helpers/random';
 import StartGameButtonsView from './StartGameButtonsView';
 
 export default injector(({ store, dispatch }) => {

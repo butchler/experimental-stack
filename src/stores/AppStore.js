@@ -9,9 +9,9 @@ export default class AppStore {
   @observable game = new GameStore();
   @observable goal = new GoalStore();
 
-  @action dispatch(action) {
-    this.ui.dispatch(action);
-    this.game.dispatch(action);
-    this.goal.dispatch(action);
+  @action dispatch(actionObject) {
+    this.ui.dispatch(actionObject);
+    this.game.dispatch(actionObject);
+    this.goal.dispatch(actionObject);
   }
 }

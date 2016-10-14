@@ -8,9 +8,9 @@ export default class UiStore {
   @observable goalLoader = new GoalLoaderStore();
   @observable gameLauncher = new GameLauncherStore();
 
-  @action dispatch(action) {
-    if (action.type === setLanguage.type) {
-      this.currentLanguage = action.payload;
+  @action dispatch(actionObject) {
+    if (actionObject.type === setLanguage.type) {
+      this.currentLanguage = actionObject.payload;
     } else {
       this.goalLoader.dispatch(action);
       this.gameLauncher.dispatch(action);

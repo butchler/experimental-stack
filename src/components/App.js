@@ -13,7 +13,7 @@ export default function App() {
     <div>
       <header className="header">
         <div className="inner-container">
-          <div className="logo-iknow"></div>
+          <div className="logo-iknow" />
 
           <LanguageSwitcher />
         </div>

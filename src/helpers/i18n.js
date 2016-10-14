@@ -1,11 +1,11 @@
 import { STRINGS, DEFAULT_LANGUAGE } from 'constants/i18n';
 
-export function getTranslation(languageCode, label) {
+export default function getTranslation(languageCode, label) {
   if (typeof languageCode !== 'string') {
-   throw new TypeError("languageCode must be a string");
+    throw new TypeError('languageCode must be a string');
   }
 
-  if (STRINGS.hasOwnProperty(label)) {
+  if (STRINGS[label]) {
     const string = STRINGS[label];
 
     return string[languageCode] ||

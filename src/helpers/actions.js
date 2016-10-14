@@ -1,28 +1,26 @@
-export function action(type, mapPayload, mapMeta) {
+export function action(type, mapPayload) {
   if (typeof type !== 'string') {
-    throw new TypeError('action() requires a type name');
+    throw new TypeError('action() requires a type name.');
   }
 
-  function createNormalAction(payload, meta = {}) {
+  function createAction(payload) {
     return {
       type,
       payload: mapPayload ? mapPayload(payload) : payload,
-      meta: mapMeta ? mapMeta(meta) : meta,
     };
   }
 
-  function createErrorAction(payload, meta = {}) {
-    return {
-      type,
-      error: true,
-      payload,
-      meta: mapMeta ? mapMeta(meta) : meta,
-    };
+  createAction.type = type;
+
+  return createAction;
+}
+
+export function asError(type, payload) {
+  if (typeof type !== 'string') {
+    throw new TypeError('error() requires a type name.');
   }
 
-  createNormalAction.error = createErrorAction;
-
-  return createNormalAction;
+  return { type, error: true, payload };
 }
 
 export function shape(typeOrShape) {
@@ -31,12 +29,12 @@ export function shape(typeOrShape) {
 
 function checkShape(typeOrShape, object) {
   if (typeof typeOrShape === 'string') {
-    if (typeof object !== typeOrShape) {
+    if (typeof object !== typeOrShape) { // eslint-disable-line valid-typeof
       throw new TypeError(`shape() expected type '${typeOrShape}' but got type '${typeof object}'.`);
     }
   } else if (Array.isArray(typeOrShape)) {
     if (typeOrShape.length !== 1) {
-      throw new TypeError('shape() arrays should only have a length of one');
+      throw new TypeError('shape() arrays should only have a length of one.');
     }
 
     if (!Array.isArray(object)) {

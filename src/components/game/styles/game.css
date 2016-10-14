@@ -12,7 +12,7 @@
     background-color: #3F6CCE;
 }
 
-.game-info label {
+.game-info .label {
     font-size: 14px;
     display: block;
 }

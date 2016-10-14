@@ -1,6 +1,8 @@
 import { observable, action, computed } from 'mobx';
 import { flipCard, unflipCards, startGame, updateGameTimer } from 'constants/actions';
 import CardStore from 'stores/CardStore';
+import ItemStore from 'stores/ItemStore';
+import TimerStore from 'stores/TimerStore';
 
 // Represents a game with a set of cards.
 export default class GameStore {
@@ -20,12 +22,14 @@ export default class GameStore {
     return this.items.every(item => item.matched);
   }
 
-  @action dispatch(action) {
-    const { type, payload } = action;
+  @action dispatch(actionObject) {
+    const { type, payload } = actionObject;
 
     if (type === startGame.type) {
-      this.items = payload.items.map(({ cue, response }) => new ItemStore(cue, response));
-      this.cards = payload.cards.map(({ itemIndex, side }) => new CardStore(this.items[itemIndex], side));
+      this.items = payload.items.map(({ cue, response }) =>
+        new ItemStore(cue, response));
+      this.cards = payload.cards.map(({ itemIndex, side }, index) =>
+        new CardStore(index, this.items[itemIndex], side));
       this.firstCardSelected = null;
       this.secondCardSelected = null;
       this.numAttempts = 0;
@@ -59,7 +63,7 @@ export default class GameStore {
         this.firstCardSelected = this.secondCardSelected = null;
       }
     } else if (type === updateGameTimer.type) {
-      this.timer.dispatch(action);
+      this.timer.dispatch(actionObject);
     }
   }
 }

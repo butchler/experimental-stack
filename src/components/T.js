@@ -1,18 +1,18 @@
 import React, { PropTypes } from 'react';
 import injector from 'helpers/injector';
-import { getTranslation } from 'helpers/i18n';
+import getTranslation from 'helpers/i18n';
 
-function T({ getTranslation, children }) {
+function T({ translate, children }) {
   const label = React.Children.only(children);
 
-  return getTranslation(label);
+  return translate(label);
 }
 
 T.propTypes = {
-  getTranslation: PropTypes.func.isRequired,
+  translate: PropTypes.func.isRequired,
   children: PropTypes.string.isRequired,
 };
 
 export default injector(({ store }) => ({
-  getTranslation: label => getTranslation(store.ui.currentLanguage, label),
+  translate: label => getTranslation(store.ui.currentLanguage, label),
 }))(T);

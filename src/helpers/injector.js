@@ -2,7 +2,7 @@ import React from 'react';
 import { observer, inject } from 'mobx';
 
 export default function injector(mapProps) {
-  return WrappedComponent => {
+  return (WrappedComponent) => {
     function Injector(props) {
       const newProps = Object.assign({}, mapProps(props), props);
 

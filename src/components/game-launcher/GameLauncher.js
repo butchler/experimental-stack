@@ -17,12 +17,12 @@ const RESULTS = 'results';
 export class GameLauncherStore {
   @observable mode = NOT_STARTED;
 
-  @action dispatch(action) {
-    if (action.type === startGame) {
+  @action dispatch({ type }) {
+    if (type === startGame) {
       this.mode = STARTED;
-    } else if (action.type === showResults) {
+    } else if (type === showResults) {
       this.mode = RESULTS;
-    } else if (action.type === quitGame) {
+    } else if (type === quitGame) {
       this.mode = NOT_STARTED;
     }
   }
@@ -32,23 +32,23 @@ export class GameLauncherStore {
 export default injector(({ store, dispatch }) => ({
   mode: store.ui.gameLauncher.mode,
   allItemsMatched: store.game.allItemsMatched,
-  showResults: () => dispatch(showResults()),
+  showGameResults: () => dispatch(showResults()),
 }))(withTasks(mapPropsToTasks)(GameLauncher));
 
 // Asynchronous tasks
-function mapPropsToTasks({ allItemsMatched, showResults }) {
+function mapPropsToTasks({ allItemsMatched, showGameResults }) {
   return [
-    allItemsMatched && task(showResultsAfterDelay, { showResults }),
+    allItemsMatched && task(showResultsAfterDelay, { showGameResults }),
   ];
 }
 
 function* showResultsAfterDelay(getProps) {
   yield call(delay, SHOW_RESULTS_DELAY);
-  getProps().showResults();
+  getProps().showGameResults();
 }
 
 // Controller component
-function GameLauncher({ mode, allItemsMatched, showResults }) {
+function GameLauncher({ mode }) {
   if (mode === NOT_STARTED) {
     return <GameLauncherView />;
   } else if (mode === STARTED) {
@@ -60,6 +60,4 @@ function GameLauncher({ mode, allItemsMatched, showResults }) {
 
 GameLauncher.propTypes = {
   mode: PropTypes.string.isRequired,
-  allItemsMatched: PropTypes.bool.isRequired,
-  showResults: PropTypes.func.isRequired,
 };
