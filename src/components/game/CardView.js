@@ -2,10 +2,10 @@ import 'components/game/styles/card.css';
 
 import React, { PropTypes } from 'react';
 
-export default function CardView({ text, isSelected, isMatched, onClick }) {
+export default function CardView({ text, isSelected, isPairSelected, isMatched, onClick }) {
   const isFaceUp = isSelected || isMatched;
-  const isCorrect = isSelected && isMatched;
-  const isWrong = isSelected && !isMatched;
+  const isCorrect = isSelected && isPairSelected && isMatched;
+  const isWrong = isSelected && isPairSelected && !isMatched;
 
   let classes = 'card';
   classes += isFaceUp ? ' card-face-up' : ' card-face-down';

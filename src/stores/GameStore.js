@@ -39,7 +39,7 @@ export default class GameStore {
       const card = this.cards[payload];
 
       // Don't do anything if the card is already selected.
-      if (!this.isSelected(card)) {
+      if (!this.isCardSelected(card)) {
         if (!this.firstCardSelected) {
           // If no cards are selected.
           this.firstCardSelected = card;
@@ -59,9 +59,9 @@ export default class GameStore {
           this.firstCardSelected = card;
           this.secondCardSelected = null;
         }
-      } else if (type === unflipCards.type) {
-        this.firstCardSelected = this.secondCardSelected = null;
       }
+    } else if (type === unflipCards.type) {
+      this.firstCardSelected = this.secondCardSelected = null;
     } else if (type === updateGameTimer.type) {
       this.timer.dispatch(actionObject);
     }

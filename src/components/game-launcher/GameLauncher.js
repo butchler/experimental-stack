@@ -18,11 +18,11 @@ export class GameLauncherStore {
   @observable mode = NOT_STARTED;
 
   @action dispatch({ type }) {
-    if (type === startGame) {
+    if (type === startGame.type) {
       this.mode = STARTED;
-    } else if (type === showResults) {
+    } else if (type === showResults.type) {
       this.mode = RESULTS;
-    } else if (type === quitGame) {
+    } else if (type === quitGame.type) {
       this.mode = NOT_STARTED;
     }
   }
@@ -36,9 +36,9 @@ export default injector(({ store, dispatch }) => ({
 }))(withTasks(mapPropsToTasks)(GameLauncher));
 
 // Asynchronous tasks
-function mapPropsToTasks({ allItemsMatched, showGameResults }) {
+function mapPropsToTasks({ mode, allItemsMatched, showGameResults }) {
   return [
-    allItemsMatched && task(showResultsAfterDelay, { showGameResults }),
+    mode === STARTED && allItemsMatched && task(showResultsAfterDelay, { showGameResults }),
   ];
 }
 

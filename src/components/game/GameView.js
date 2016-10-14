@@ -28,6 +28,6 @@ export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
 GameView.propTypes = {
   timeElapsed: PropTypes.string.isRequired,
   numAttempts: PropTypes.number.isRequired,
-  cards: PropTypes.arrayOf(PropTypes.object),
+  cards: PropTypes.object,
   onQuit: PropTypes.func.isRequired,
 };

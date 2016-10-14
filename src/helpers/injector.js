@@ -3,10 +3,12 @@ import { observer, inject } from 'mobx-react';
 
 export default function injector(mapProps) {
   return (WrappedComponent) => {
+    const WrappedObserver = observer(WrappedComponent);
+
     function Injector(props) {
       const newProps = Object.assign({}, mapProps(props), props);
 
-      return React.createElement(WrappedComponent, newProps);
+      return React.createElement(WrappedObserver, newProps);
     }
 
     Injector.displayName = `Injector(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
