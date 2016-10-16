@@ -14,15 +14,33 @@ window.actions = [];
 window.store = store;
 function dispatch(action) {
   window.actions.push(action);
+  localStorage.actions = JSON.stringify(actions);
   store.dispatch(action);
 }
 
-// Set language.
-dispatch(setLanguage(
-  window.navigator.language ||
-  window.navigator.userLanguage ||
-  DEFAULT_LANGUAGE.code
-));
+function reset() {
+  delete localStorage.actions;
+  window.location.reload();
+}
+window.reset = reset;
+
+// Replay previous actions.
+try {
+  const previousActions = JSON.parse(localStorage.actions);
+  window.actions = previousActions;
+  previousActions.forEach(action => store.dispatch(action));
+} catch (error) {
+  console.log('Error parsing previous actions:', error);
+}
+
+// Set language to the default if it has not been set already.
+if (!store.ui.currentLanguage) {
+  dispatch(setLanguage(
+    window.navigator.language ||
+    window.navigator.userLanguage ||
+    DEFAULT_LANGUAGE.code
+  ));
+}
 
 ReactDOM.render(
   <Provider store={store} dispatch={dispatch}>

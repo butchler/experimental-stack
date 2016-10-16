@@ -41,12 +41,12 @@ function* unflipCardsAfterDelay(getProps) {
 }
 
 function* tickTimer(getProps) {
-  const startTime = yield callMethod(window.performance, 'now');
 
   while (true) { // eslint-disable-line no-constant-condition
+    const tickStart = yield callMethod(window.performance, 'now');
     yield call(delay, 100);
-    const now = yield callMethod(window.performance, 'now');
-    const millisecondsElapsed = now - startTime;
+    const tickEnd = yield callMethod(window.performance, 'now');
+    const millisecondsElapsed = tickEnd - tickStart;
     getProps().updateTimer(millisecondsElapsed);
   }
 }

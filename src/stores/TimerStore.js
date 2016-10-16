@@ -19,7 +19,7 @@ export default class TimerStore {
 
   @action dispatch({ type, payload }) {
     if (type === updateGameTimer.type) {
-      this.millisecondsElapsed = payload;
+      this.millisecondsElapsed += payload;
     }
   }
 }
