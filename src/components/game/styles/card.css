@@ -16,6 +16,8 @@
     font-size: 18px;
     color: black;
     background-color: white;
+
+    cursor: default;
 }
 
 .card-contents {
@@ -30,8 +32,6 @@
     text-align: center;
 
     padding: 1em;
-
-    cursor: default;
 }
 
 /* When the card is face down, cover its contents using a pseudo element. This

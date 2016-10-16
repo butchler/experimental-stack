@@ -20,7 +20,7 @@ export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
         {cards.map(card => <Card key={card.id} card={card} />)}
       </div>
 
-      <button onClick={onQuit}><T>quitGame</T></button>
+      <button className="button" onClick={onQuit}><T>quitGame</T></button>
     </div>
   );
 }

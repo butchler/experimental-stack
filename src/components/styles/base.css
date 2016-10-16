@@ -34,7 +34,7 @@ body {
   padding: 50px 0;
 }
 
-button {
+.button {
     border: none;
     border-radius: 4px;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
@@ -47,7 +47,7 @@ button {
     background-color: #ff8b00;
 }
 
-button:hover {
+.button:hover {
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: #ff9b10;
 }
