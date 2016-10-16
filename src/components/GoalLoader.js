@@ -77,14 +77,12 @@ export class GoalLoaderStore {
 }
 
 function parseGoalItems(goalJSON) {
-  // TODO
-  // const items = JSON.parse(goalJSON).goal_items;
+  const goalItems = JSON.parse(goalJSON).goal_items;
 
-  return [
-    { cue: 'cue', response: 'response' },
-    { cue: 'dog', response: 'perro' },
-    { cue: 'cat', response: 'gato' },
-  ];
+  return goalItems.map(itemData => ({
+    cue: itemData.item.cue.text,
+    response: itemData.item.response.text,
+  }));
 }
 
 export default injector(({ store, dispatch }) => ({

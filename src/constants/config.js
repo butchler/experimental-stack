@@ -1,4 +1,4 @@
-export const GOAL_URL = '/api/goal.js';
+export const GOAL_URL = '/api/goal.json';
 
 // Number of milliseconds to show selected cards after flipping two cards.
 export const SELECTION_DELAY = 2000;
