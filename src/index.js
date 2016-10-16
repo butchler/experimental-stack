@@ -14,19 +14,19 @@ window.actions = [];
 window.store = store;
 function dispatch(action) {
   window.actions.push(action);
-  localStorage.actions = JSON.stringify(actions);
+  window.localStorage.actions = JSON.stringify(window.actions);
   store.dispatch(action);
 }
 
 function reset() {
-  delete localStorage.actions;
+  delete window.localStorage.actions;
   window.location.reload();
 }
 window.reset = reset;
 
 // Replay previous actions.
 try {
-  const previousActions = JSON.parse(localStorage.actions);
+  const previousActions = JSON.parse(window.localStorage.actions);
   window.actions = previousActions;
   previousActions.forEach(action => store.dispatch(action));
 } catch (error) {

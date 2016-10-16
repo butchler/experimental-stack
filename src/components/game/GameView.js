@@ -1,6 +1,7 @@
 import 'components/game/styles/game.css';
 
 import React, { PropTypes } from 'react';
+import { PropTypes as MobxPropTypes } from 'mobx-react';
 import Card from 'components/game/Card';
 import T from 'components/T';
 
@@ -28,6 +29,6 @@ export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
 GameView.propTypes = {
   timeElapsed: PropTypes.string.isRequired,
   numAttempts: PropTypes.number.isRequired,
-  cards: PropTypes.object,
+  cards: MobxPropTypes.observableArray,
   onQuit: PropTypes.func.isRequired,
 };

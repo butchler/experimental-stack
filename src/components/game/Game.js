@@ -41,7 +41,6 @@ function* unflipCardsAfterDelay(getProps) {
 }
 
 function* tickTimer(getProps) {
-
   while (true) { // eslint-disable-line no-constant-condition
     const tickStart = yield callMethod(window.performance, 'now');
     yield call(delay, 100);

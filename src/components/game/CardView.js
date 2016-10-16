@@ -23,6 +23,7 @@ export default function CardView({ text, isSelected, isPairSelected, isMatched, 
 CardView.propTypes = {
   text: PropTypes.string.isRequired,
   isSelected: PropTypes.bool.isRequired,
+  isPairSelected: PropTypes.bool.isRequired,
   isMatched: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
 };
