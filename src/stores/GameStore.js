@@ -63,7 +63,9 @@ export default class GameStore {
     } else if (type === unflipCards.type) {
       this.firstCardSelected = this.secondCardSelected = null;
     } else if (type === updateGameTimer.type) {
-      this.timer.dispatch(actionObject);
+      if (!this.allItemsMatched) {
+        this.timer.dispatch(actionObject);
+      }
     }
   }
 }

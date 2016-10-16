@@ -9,7 +9,7 @@ export default class TimerStore {
   }
 
   // Formats the game.millisecondsElapsed as a "minutes:seconds" string.
-  @computed get string() {
+  @computed get timeElapsedString() {
     const minutes = Math.floor(this.secondsElapsed / 60);
     const seconds = this.secondsElapsed % 60;
     const secondsString = seconds < 10 ? `0${seconds}` : seconds;

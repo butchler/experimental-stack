@@ -8,7 +8,7 @@ import GameView from './GameView';
 
 export default injector(({ store, dispatch }) => ({
   // For view
-  timeElapsed: store.game.timer.string,
+  timeElapsed: store.game.timer.timeElapsedString,
   numAttempts: store.game.numAttempts,
   cards: store.game.cards,
   onQuit: () => dispatch(quitGame()),
