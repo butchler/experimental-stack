@@ -1,28 +1,15 @@
-import injector from 'helpers/injector';
+import mapPropStream from 'helpers/mapPropStream';
+import { map } from 'helpers/operators';
 import { LANGUAGES } from 'constants/i18n';
 import { setLanguage } from 'constants/actions';
+import { dispatch, currentLanguage$ } from 'globals/streams';
 import LanguageSwitcherView from './LanguageSwitcherView';
 
-// TODO: Tie this to the React context instead of it being global.
-const state$ = new Subject();
-// Subcribe to the global action stream and reduce the state.
-action$::reducer(reduceCurrentLanguage).subscribe(state$);
-// Save the state globally for debugging purposes
-state$.subscribe(state => globalState.languageSwitcher = state);
-// Map the state stream into each component's prop stream.
-export default mapPropStream(prop$ => state$::map(mapStateToProps))(LanguageSwitcherView);
+export default mapPropStream(prop$ => currentLanguage$::map(mapStateToProps))(LanguageSwitcherView);
 
-export function reduceCurrentLanguage(state = 'en', action) {
-  if (action.type === setLanguage.type) {
-    return action.payload;
-  }
-
-  return state;
-}
-
-export function mapStateToProps(state) {
+export function mapStateToProps(currentLanguage) {
   return {
-    currentLanguage: state,
+    currentLanguage,
     languages: LANGUAGES,
     setLanguage: languageCode => dispatch(setLanguage(languageCode)),
   };

@@ -1,16 +1,17 @@
 import React, { PropTypes } from 'react';
-import injector from 'helpers/injector';
+import mapPropStream from 'helpers/mapPropStream';
 import getTranslation from 'helpers/i18n';
+import { currentLanguage$ } from 'globals/streams';
 
-function T({ translate, children }) {
-  return <span>{translate(children)}</span>;
+function T({ text }) {
+  return <span>{text}</span>;
 }
 
 T.propTypes = {
-  translate: PropTypes.func.isRequired,
-  children: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
 };
 
-export default injector(({ store }) => ({
-  translate: label => getTranslation(store.ui.currentLanguage, label),
-}))(T);
+export default mapPropStream(props$ =>
+  combineLatest([props$, currentLanguage$])::map((props, currentLanguage) => ({
+    text: getTranslation(currentLanguage, props.children),
+  })))(T);
