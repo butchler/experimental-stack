@@ -1,4 +1,3 @@
-import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { withTasks, task, delay } from 'react-task';
 import { startGame, showResults, quitGame } from 'constants/actions';

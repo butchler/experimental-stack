@@ -7,7 +7,7 @@ export const setGoalItems = action('SET_GOAL_ITEMS', shape(
 export const setGoalError = action('SET_GOAL_ERROR', shape('string'));
 export const startGame = action('START_GAME', shape({
   items: [{ cue: 'string', response: 'string' }],
-  cards: [{ itemIndex: 'number', side: 'string' }],
+  cards: [{ itemId: 'number', side: 'string' }],
 }));
 export const quitGame = action('QUIT_GAME');
 export const showResults = action('SHOW_RESULTS');

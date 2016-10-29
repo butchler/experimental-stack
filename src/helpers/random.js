@@ -8,8 +8,8 @@ export default function getRandomCards(numItems, goalItems) {
 
   // Create a cue card and a response card for each item.
   for (let i = 0; i < items.length; i += 1) {
-    cards.push({ itemIndex: i, side: 'cue' });
-    cards.push({ itemIndex: i, side: 'response' });
+    cards.push({ itemId: i, side: 'cue' });
+    cards.push({ itemId: i, side: 'response' });
   }
 
   // Shuffle the cards so that the cue card isn't right next to the response card.

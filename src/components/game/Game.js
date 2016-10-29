@@ -1,52 +1,61 @@
 /* global window */
-import { withTasks, task, call, callMethod, delay } from 'react-task';
-import injector from 'helpers/injector';
+import { connect } from 'react-redux';
+import { withTasks, task, delay } from 'react-task';
 import playUrl from 'helpers/audio';
 import { SELECTION_DELAY } from 'constants/config';
 import { unflipCards, updateGameTimer, quitGame } from 'constants/actions';
+import { GAME } from 'reducers/app';
 import GameView from './GameView';
 
-export default injector(({ store, dispatch }) => ({
-  // For view
-  timeElapsed: store.game.timer.timeElapsedString,
-  numAttempts: store.game.numAttempts,
-  cards: store.game.cards,
-  onQuit: () => dispatch(quitGame()),
-  // For tasks
-  firstCard: store.game.firstCardSelected,
-  secondCard: store.game.secondCardSelected,
-  lastItemMatched: store.game.lastItemMatched,
-  unflip: () => dispatch(unflipCards()),
-  updateTimer: ms => dispatch(updateGameTimer(ms)),
-}))(
-  withTasks(mapPropsToTasks)(GameView)
-);
+export function reduceGame(gameState, gameTimer) {
+  return {
+    ...gameState,
+    timeElapsed: gameTimer.timeElapsedString,
+  };
+}
+
+export default connect(
+  state => state[GAME],
+  { unflipCards, updateGameTimer, quitGame }
+)(withTasks(mapPropsToTasks)(GameView));
 
 // Asynchronous tasks
-function mapPropsToTasks({ unflip, firstCard, secondCard, updateTimer, lastItemMatched }) {
+function mapPropsToTasks({
+  unflipCards, firstCardId, secondCardId, updateGameTimer, lastItemMatched,
+}) {
   return [
-    firstCard && secondCard && task(unflipCardsAfterDelay, {
-      key: `${firstCard.id}-${secondCard.id}`,
-      unflip,
+    firstCardId && secondCardId && task(unflipCardsAfterDelay, {
+      key: `${firstCardId}-${secondCardId}`,
+      delay,
+      unflipCards,
     }),
-    task(tickTimer, { updateTimer }),
+    task(tickTimer, {
+      now: () => window.performance.now(),
+      delay,
+      updateGameTimer,
+    }),
     // TODO: Task to preload sounds.
-    lastItemMatched && task(playItemSound, { key: lastItemMatched.id, item: lastItemMatched }),
+    lastItemMatched && task(playItemSound, {
+      key: lastItemMatched.id,
+      item: lastItemMatched,
+      playUrl,
+    }),
   ];
 }
 
 function* unflipCardsAfterDelay(getProps) {
-  yield call(delay, SELECTION_DELAY);
-  getProps().unflip();
+  yield getProps().delay(SELECTION_DELAY);
+  getProps().unflipCards();
 }
 
 function* tickTimer(getProps) {
+  let tickStart = getProps.now();
   while (true) { // eslint-disable-line no-constant-condition
-    const tickStart = yield callMethod(window.performance, 'now');
-    yield call(delay, 100);
-    const tickEnd = yield callMethod(window.performance, 'now');
+    yield getProps().delay(100);
+    const tickEnd = getProps().now();
     const millisecondsElapsed = tickEnd - tickStart;
-    getProps().updateTimer(millisecondsElapsed);
+    tickStart = tickEnd;
+    getProps().updateGameTimer(millisecondsElapsed);
   }
 }
 
@@ -54,6 +63,7 @@ function* playItemSound(getProps) {
   const { item } = getProps();
 
   if (item.sound) {
-    yield call(playUrl, item.sound);
+    // Yield so that the sound gets cancelled if the task is cancelled.
+    yield getProps.playUrl(item.sound);
   }
 }

@@ -2,11 +2,7 @@ import 'components/game/styles/card.css';
 
 import React, { PropTypes } from 'react';
 
-export default function CardView({ text, isSelected, isPairSelected, isMatched, onClick }) {
-  const isFaceUp = isSelected || isMatched;
-  const isCorrect = isSelected && isPairSelected && isMatched;
-  const isWrong = isSelected && isPairSelected && !isMatched;
-
+export default function CardView({ text, isFaceUp, isSelected, isCorrect, isWrong, onClick }) {
   let classes = 'card';
   classes += isFaceUp ? ' card-face-up' : ' card-face-down';
   if (isSelected) { classes += ' card-selected'; }
@@ -22,8 +18,9 @@ export default function CardView({ text, isSelected, isPairSelected, isMatched, 
 
 CardView.propTypes = {
   text: PropTypes.string.isRequired,
+  isFaceUp: PropTypes.bool.isRequired,
   isSelected: PropTypes.bool.isRequired,
-  isPairSelected: PropTypes.bool.isRequired,
-  isMatched: PropTypes.bool.isRequired,
+  isCorrect: PropTypes.bool.isRequired,
+  isWrong: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
 };

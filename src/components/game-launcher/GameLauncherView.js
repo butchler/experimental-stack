@@ -3,7 +3,6 @@ import T from 'components/T';
 import Game from 'components/game/Game';
 import GameResults from 'components/game-launcher/GameResults';
 import StartGameButtons from 'components/game-launcher/StartGameButtons';
-import { STARTED, RESULTS } from './GameLauncher';
 
 // Constants
 export const MODE_NOT_STARTED = 'not-started';

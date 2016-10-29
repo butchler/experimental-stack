@@ -4,14 +4,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import appReducer, { CURRENT_LANGUAGE } from 'reducers/app';
+import reduceApp from 'reducers/app';
 import App from 'components/App';
 import { setLanguage } from 'constants/actions';
 import { DEFAULT_LANGUAGE } from 'constants/i18n';
 
 // Initialize store.
 window.actions = [];
-const actionLogger = store => next => action => {
+const actionLogger = () => (next) => (action) => {
   window.actions.push(action);
   window.localStorage.actions = JSON.stringify(window.actions);
   return next(action);
@@ -20,9 +20,9 @@ const actionLogger = store => next => action => {
 window.reset = () => {
   delete window.localStorage.actions;
   window.location.reload();
-}
+};
 
-const appStore = createStore(appReducer, applyMiddleware(actionLogger));
+const appStore = createStore(reduceApp, applyMiddleware(actionLogger));
 
 // Set language to the user's default.
 appStore.dispatch(setLanguage(

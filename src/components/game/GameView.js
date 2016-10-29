@@ -1,7 +1,6 @@
 import 'components/game/styles/game.css';
 
 import React, { PropTypes } from 'react';
-import { PropTypes as MobxPropTypes } from 'mobx-react';
 import Card from 'components/game/Card';
 import T from 'components/T';
 
@@ -18,7 +17,7 @@ export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
       </div>
 
       <div className="game-cards">
-        {cards.map(card => <Card key={card.id} card={card} />)}
+        {cards.map(card => <Card key={card.id} id={card.id} />)}
       </div>
 
       <button className="button" onClick={onQuit}><T>quitGame</T></button>
@@ -29,6 +28,6 @@ export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
 GameView.propTypes = {
   timeElapsed: PropTypes.string.isRequired,
   numAttempts: PropTypes.number.isRequired,
-  cards: MobxPropTypes.observableArray,
+  cards: PropTypes.arrayOf(PropTypes.object).isRequired,
   onQuit: PropTypes.func.isRequired,
 };

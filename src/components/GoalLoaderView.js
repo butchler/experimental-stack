@@ -5,13 +5,11 @@ import GameLauncher from 'components/game-launcher/GameLauncher';
 export default function GoalLoaderView({ goalLoaded, errorMessage }) {
   if (goalLoaded) {
     return <GameLauncher />;
-  } else {
+  } else if (errorMessage) {
     // TODO: Make translations for error messages.
-    if (errorMessage) {
-      return <p className="loading-error"><strong>Error:</strong> {errorMessage}</p>;
-    } else {
-      return <h2 className="loading"><T>loading</T></h2>;
-    }
+    return <p className="loading-error"><strong>Error:</strong> {errorMessage}</p>;
+  } else {
+    return <h2 className="loading"><T>loading</T></h2>;
   }
 }
 

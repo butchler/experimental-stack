@@ -7,7 +7,7 @@ import StartGameButtonsView from './StartGameButtonsView';
 
 export function reduceStartGameButtons(items) {
   return { items };
-};
+}
 
 export default connect(
   state => state[START_GAME_BUTTONS],

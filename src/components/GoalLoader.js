@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { setGoalItems, setGoalError } from 'constants/actions';
 import { GOAL_URL } from 'constants/config';
 import { GOAL_LOADER } from 'reducers/app';
-import GameLauncher from 'components/game-launcher/GameLauncher';
 import GoalLoaderView from './GoalLoaderView';
 
 // Export view state reducer.
@@ -59,6 +58,7 @@ class GoalLoader extends React.Component {
 GoalLoader.propTypes = {
   setGoalItems: PropTypes.func.isRequired,
   setGoalError: PropTypes.func.isRequired,
+  goalLoaded: PropTypes.bool.isRequired,
 };
 
 function parseGoalItems(goalJSON) {
