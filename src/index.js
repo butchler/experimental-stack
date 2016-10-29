@@ -32,13 +32,13 @@ appStore.dispatch(setLanguage(
 ));
 
 // Replay saved actions.
-try {
-  const previousActions = JSON.parse(window.localStorage.actions);
-  window.actions = previousActions;
-  previousActions.forEach(action => appStore.dispatch(action));
-} catch (error) {
-  console.log('Error parsing previous actions:', error);
-}
+//try {
+  //const previousActions = JSON.parse(window.localStorage.actions);
+  //window.actions = previousActions;
+  //previousActions.forEach(action => appStore.dispatch(action));
+//} catch (error) {
+  //console.log('Error parsing previous actions:', error);
+//}
 
 
 // Begin rendering UI.

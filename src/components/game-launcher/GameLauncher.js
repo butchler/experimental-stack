@@ -1,63 +1,46 @@
 import React, { PropTypes } from 'react';
-import { observable, action } from 'mobx';
-import { withTasks, task, call, delay } from 'react-task';
-import injector from 'helpers/injector';
+import { connect } from 'react-redux';
+import { withTasks, task, delay } from 'react-task';
 import { startGame, showResults, quitGame } from 'constants/actions';
 import { SHOW_RESULTS_DELAY } from 'constants/config';
-import Game from 'components/game/Game';
-import GameResults from 'components/game-launcher/GameResults';
-import GameLauncherView from './GameLauncherView';
+import { GAME_LAUNCHER } from 'reducers/app';
+import GameLauncherView, {
+  MODE_NOT_STARTED, MODE_STARTED, MODE_RESULTS,
+} from './GameLauncherView';
 
-// Constants
-const NOT_STARTED = 'not-started';
-const STARTED = 'started';
-const RESULTS = 'results';
+export function reduceGameLauncher(viewState = {}, allItemsMatched, action) {
+  return {
+    mode: reduceMode(viewState.mode, action),
+    allItemsMatched,
+  };
+}
 
-// UI state store
-export class GameLauncherStore {
-  @observable mode = NOT_STARTED;
-
-  @action dispatch({ type }) {
-    if (type === startGame.type) {
-      this.mode = STARTED;
-    } else if (type === showResults.type) {
-      this.mode = RESULTS;
-    } else if (type === quitGame.type) {
-      this.mode = NOT_STARTED;
-    }
+function reduceMode(mode = MODE_NOT_STARTED, { type }) {
+  switch (type) {
+    case startGame.type:
+      return MODE_STARTED;
+    case showResults.type:
+      return MODE_RESULTS;
+    case quitGame.type:
+      return MODE_NOT_STARTED;
+    default:
+      return mode;
   }
 }
 
-// State injector
-export default injector(({ store, dispatch }) => ({
-  mode: store.ui.gameLauncher.mode,
-  allItemsMatched: store.game.allItemsMatched,
-  showGameResults: () => dispatch(showResults()),
-}))(withTasks(mapPropsToTasks)(GameLauncher));
+export default connect(
+  state => state[GAME_LAUNCHER],
+  { showResults }
+)(withTasks(mapPropsToTasks)(GameLauncherView));
 
 // Asynchronous tasks
-function mapPropsToTasks({ mode, allItemsMatched, showGameResults }) {
+function mapPropsToTasks({ mode, allItemsMatched, showResults }) {
   return [
-    mode === STARTED && allItemsMatched && task(showResultsAfterDelay, { showGameResults }),
+    mode === MODE_STARTED && allItemsMatched && task(showResultsAfterDelay, { showResults, delay }),
   ];
 }
 
 function* showResultsAfterDelay(getProps) {
-  yield call(delay, SHOW_RESULTS_DELAY);
-  getProps().showGameResults();
+  yield getProps().delay(SHOW_RESULTS_DELAY);
+  getProps().showResults();
 }
-
-// Controller component
-function GameLauncher({ mode }) {
-  if (mode === STARTED) {
-    return <Game />;
-  } else if (mode === RESULTS) {
-    return <GameResults />;
-  } else {
-    return <GameLauncherView />;
-  }
-}
-
-GameLauncher.propTypes = {
-  mode: PropTypes.string.isRequired,
-};

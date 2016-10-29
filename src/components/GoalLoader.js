@@ -8,7 +8,7 @@ import GameLauncher from 'components/game-launcher/GameLauncher';
 import GoalLoaderView from './GoalLoaderView';
 
 // Export view state reducer.
-export function reduceGoalLoaderView(viewState = { goalLoaded: false }, { type, payload }) {
+export function reduceGoalLoader(viewState = { goalLoaded: false }, { type, payload }) {
   switch (type) {
     case setGoalItems.type:
       return { goalLoaded: true };

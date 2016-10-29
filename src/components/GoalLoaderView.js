@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import T from 'components/T';
+import GameLauncher from 'components/game-launcher/GameLauncher';
 
 export default function GoalLoaderView({ goalLoaded, errorMessage }) {
   if (goalLoaded) {

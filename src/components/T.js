@@ -1,15 +1,15 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import getTranslation from 'helpers/i18n';
-import { CURRENT_LANGUAGE } from 'reducers/app';
+import { TRANSLATOR } from 'reducers/app';
 
-export default connect(mapStateToProps)(T);
-
-function mapStateToProps(state) {
+export function reduceTranslator(currentLanguage) {
   return {
-    translate: label => getTranslation(state[CURRENT_LANGUAGE], label),
+    translate: label => getTranslation(currentLanguage, label),
   };
 }
+
+export default connect(state => state[TRANSLATOR])(T);
 
 function T({ translate, children }) {
   return <span>{translate(children)}</span>;

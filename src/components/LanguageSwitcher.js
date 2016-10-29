@@ -1,20 +1,17 @@
 import { connect } from 'react-redux';
 import { LANGUAGES } from 'constants/i18n';
 import { setLanguage } from 'constants/actions';
-import { CURRENT_LANGUAGE } from 'reducers/app';
+import { LANGUAGE_SWITCHER } from 'reducers/app';
 import LanguageSwitcherView from './LanguageSwitcherView';
 
-export default connect(mapStateToProps, mapDispatchToProps)(LanguageSwitcherView);
-
-function mapStateToProps(state) {
+export function reduceLanguageSwitcher(currentLanguage) {
   return {
-    currentLanguage: state[CURRENT_LANGUAGE],
+    currentLanguage,
     languages: LANGUAGES,
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    setLanguage: languageCode => dispatch(setLanguage(languageCode)),
-  };
-}
+export default connect(
+  state => state[LANGUAGE_SWITCHER],
+  { setLanguage },
+)(LanguageSwitcherView);
