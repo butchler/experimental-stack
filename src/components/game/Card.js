@@ -3,37 +3,6 @@ import { startGame, flipCard, unflipCards } from 'constants/actions';
 import { CARDS } from 'reducers/app';
 import CardView from './CardView';
 
-//export function reduceCards(state = { cardStates: [], wasPairSelected: false }, gameState) {
-  //const isPairSelected = gameState.firstCardId !== null && gameState.secondCardId !== null;
-  //const cardStates = gameState.cards.map(card =>
-    //reduceCard(cardStates[card.id], card, state.wasPairSelected, isPairSelected, gameState));
-
-  //return { cardStates, wasPairSelected: isPairSelected };
-//}
-
-//const INITIAL_CARD_STATE = {
-  //isSelected: false,
-  //isMatched: false,
-//};
-
-//function reduceCard(cardState = INITIAL_CARD_STATE, card, gameState, wasPairSelected, isPairSelected) {
-  //const isSelected = card.id === gameState.firstCardId;
-  //const isMatched = gameState.items[card.itemId].matched;
-
-  //if (isSelected !== cardState.isSelected ||
-    //isMatched !== cardState.isMatched ||
-    //(isSelected && isPairSelected !== wasPairSelected)) {
-    //return {
-      //isSelected,
-      //isFaceUp: isSelected || isMatched,
-      //isCorrect: isSelected && isPairSelected && isMatched,
-      //isWrong: isSelected && isPairSelected && !isMatched,
-    //};
-  //}
-
-  //return card;
-//}
-
 const INITIAL_STATE = {
   cards: [],
   prevFirstCardId: null,

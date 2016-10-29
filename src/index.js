@@ -13,13 +13,7 @@ import { DEFAULT_LANGUAGE } from 'constants/i18n';
 window.actions = [];
 const actionLogger = () => next => (action) => {
   window.actions.push(action);
-  //window.localStorage.actions = JSON.stringify(window.actions);
   return next(action);
-};
-
-window.reset = () => {
-  delete window.localStorage.actions;
-  window.location.reload();
 };
 
 const appStore = createStore(reduceApp, applyMiddleware(actionLogger));
@@ -30,16 +24,6 @@ appStore.dispatch(setLanguage(
   window.navigator.userLanguage ||
   DEFAULT_LANGUAGE.code
 ));
-
-// Replay saved actions.
-//try {
-  //const previousActions = JSON.parse(window.localStorage.actions);
-  //window.actions = previousActions;
-  //previousActions.forEach(action => appStore.dispatch(action));
-//} catch (error) {
-  //console.log('Error parsing previous actions:', error);
-//}
-
 
 // Begin rendering UI.
 ReactDOM.render(
