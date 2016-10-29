@@ -2,48 +2,48 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'mobx-react';
-import AppStore from 'stores/AppStore';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import appReducer, { CURRENT_LANGUAGE } from 'reducers/app';
 import App from 'components/App';
 import { setLanguage } from 'constants/actions';
 import { DEFAULT_LANGUAGE } from 'constants/i18n';
 
-const store = new AppStore();
-
+// Initialize store.
 window.actions = [];
-window.store = store;
-function dispatch(action) {
+const actionLogger = store => next => action => {
   window.actions.push(action);
   window.localStorage.actions = JSON.stringify(window.actions);
-  store.dispatch(action);
-}
+  return next(action);
+};
 
-function reset() {
+window.reset = () => {
   delete window.localStorage.actions;
   window.location.reload();
 }
-window.reset = reset;
 
-// Replay previous actions.
+const appStore = createStore(appReducer, applyMiddleware(actionLogger));
+
+// Set language to the user's default.
+appStore.dispatch(setLanguage(
+  window.navigator.language ||
+  window.navigator.userLanguage ||
+  DEFAULT_LANGUAGE.code
+));
+
+// Replay saved actions.
 try {
   const previousActions = JSON.parse(window.localStorage.actions);
   window.actions = previousActions;
-  previousActions.forEach(action => store.dispatch(action));
+  previousActions.forEach(action => appStore.dispatch(action));
 } catch (error) {
   console.log('Error parsing previous actions:', error);
 }
 
-// Set language to the default if it has not been set already.
-if (!store.ui.currentLanguage) {
-  dispatch(setLanguage(
-    window.navigator.language ||
-    window.navigator.userLanguage ||
-    DEFAULT_LANGUAGE.code
-  ));
-}
 
+// Begin rendering UI.
 ReactDOM.render(
-  <Provider store={store} dispatch={dispatch}>
+  <Provider store={appStore}>
     <App />
   </Provider>,
   document.getElementById('app-container')

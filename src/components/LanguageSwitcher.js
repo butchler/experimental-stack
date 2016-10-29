@@ -1,16 +1,20 @@
-import mapPropStream from 'helpers/mapPropStream';
-import { map } from 'helpers/operators';
+import { connect } from 'react-redux';
 import { LANGUAGES } from 'constants/i18n';
 import { setLanguage } from 'constants/actions';
-import { dispatch, currentLanguage$ } from 'globals/streams';
+import { CURRENT_LANGUAGE } from 'reducers/app';
 import LanguageSwitcherView from './LanguageSwitcherView';
 
-export default mapPropStream(prop$ => currentLanguage$::map(mapStateToProps))(LanguageSwitcherView);
+export default connect(mapStateToProps, mapDispatchToProps)(LanguageSwitcherView);
 
-export function mapStateToProps(currentLanguage) {
+function mapStateToProps(state) {
   return {
-    currentLanguage,
+    currentLanguage: state[CURRENT_LANGUAGE],
     languages: LANGUAGES,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
     setLanguage: languageCode => dispatch(setLanguage(languageCode)),
   };
 }

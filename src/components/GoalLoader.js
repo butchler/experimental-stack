@@ -1,12 +1,23 @@
 /* global XMLHttpRequest */
 import React, { PropTypes } from 'react';
-import { observable, action } from 'mobx';
-import injector from 'helpers/injector';
-import { setGoalItems } from 'constants/actions';
-import { asError } from 'helpers/actions';
+import { connect } from 'react-redux';
+import { setGoalItems, setGoalError } from 'constants/actions';
 import { GOAL_URL } from 'constants/config';
+import { GOAL_LOADER } from 'reducers/app';
 import GameLauncher from 'components/game-launcher/GameLauncher';
 import GoalLoaderView from './GoalLoaderView';
+
+// Export view state reducer.
+export function reduceGoalLoaderView(viewState = { goalLoaded: false }, { type, payload }) {
+  switch (type) {
+    case setGoalItems.type:
+      return { goalLoaded: true };
+    case setGoalError.type:
+      return { errorMessage: payload, goalLoaded: false };
+    default:
+      return viewState;
+  }
+}
 
 // Controller component
 class GoalLoader extends React.Component {
@@ -25,13 +36,13 @@ class GoalLoader extends React.Component {
           try {
             items = parseGoalItems(request.response);
           } catch (error) {
-            this.props.onError('There was a problem parsing the goal data.');
+            this.props.setGoalError('There was a problem parsing the goal data.');
             return;
           }
 
-          this.props.onSuccess(items);
+          this.props.setGoalItems(items);
         } else {
-          this.props.onError('There was a problem loading the goal data.');
+          this.props.setGoalError('There was a problem loading the goal data.');
         }
       }
     };
@@ -41,40 +52,14 @@ class GoalLoader extends React.Component {
   }
 
   render() {
-    const { goalLoaded, errorMessage } = this.props;
-
-    if (goalLoaded) {
-      return <GameLauncher />;
-    } else {
-      return <GoalLoaderView errorMessage={errorMessage} />;
-    }
+    return <GoalLoaderView {...this.props} />;
   }
 }
 
 GoalLoader.propTypes = {
-  goalLoaded: PropTypes.bool.isRequired,
-  errorMessage: PropTypes.string,
-  onSuccess: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
+  setGoalItems: PropTypes.func.isRequired,
+  setGoalError: PropTypes.func.isRequired,
 };
-
-// UI state store
-export class GoalLoaderStore {
-  @observable items;
-  @observable errorMessage;
-
-  @action dispatch({ type, error, payload }) {
-    if (type === setGoalItems.type) {
-      if (error) {
-        this.items = undefined;
-        this.errorMessage = payload;
-      } else {
-        this.items = payload;
-        this.errorMessage = undefined;
-      }
-    }
-  }
-}
 
 function parseGoalItems(goalJSON) {
   const goalItems = JSON.parse(goalJSON).goal_items;
@@ -85,9 +70,7 @@ function parseGoalItems(goalJSON) {
   }));
 }
 
-export default injector(({ store, dispatch }) => ({
-  goalLoaded: !!store.ui.goalLoader.items,
-  errorMessage: store.ui.goalLoader.errorMessage,
-  onSuccess: items => dispatch(setGoalItems(items)),
-  onError: message => dispatch(asError(setGoalItems.type, message)),
-}))(GoalLoader);
+export default connect(
+  state => state[GOAL_LOADER],
+  { setGoalItems, setGoalError },
+)(GoalLoader);

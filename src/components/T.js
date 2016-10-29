@@ -1,17 +1,21 @@
 import React, { PropTypes } from 'react';
-import mapPropStream from 'helpers/mapPropStream';
+import { connect } from 'react-redux';
 import getTranslation from 'helpers/i18n';
-import { currentLanguage$ } from 'globals/streams';
+import { CURRENT_LANGUAGE } from 'reducers/app';
 
-function T({ text }) {
-  return <span>{text}</span>;
+export default connect(mapStateToProps)(T);
+
+function mapStateToProps(state) {
+  return {
+    translate: label => getTranslation(state[CURRENT_LANGUAGE], label),
+  };
+}
+
+function T({ translate, children }) {
+  return <span>{translate(children)}</span>;
 }
 
 T.propTypes = {
-  text: PropTypes.string.isRequired,
+  children: PropTypes.string.isRequired,
+  translate: PropTypes.func.isRequired,
 };
-
-export default mapPropStream(props$ =>
-  combineLatest([props$, currentLanguage$])::map((props, currentLanguage) => ({
-    text: getTranslation(currentLanguage, props.children),
-  })))(T);
