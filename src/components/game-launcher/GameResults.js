@@ -1,8 +1,9 @@
-import injector from 'helpers/injector';
+import { connect } from 'react-redux';
 import GameResultsView from './GameResultsView';
+import { GAME_RESULTS } from 'reducers/app';
 
-export default injector(({ store }) => ({
-  items: store.game.items,
-  timeElapsed: store.game.timer.timeElapsedString,
-  numAttempts: store.game.numAttempts,
-}))(GameResultsView);
+export function reduceGameResults(items, timeElapsed, numAttempts) {
+  return { items, timeElapsed, numAttempts };
+}
+
+export default connect(state => state[GAME_RESULTS])(GameResultsView);

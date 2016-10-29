@@ -1,15 +1,20 @@
-import injector from 'helpers/injector';
+import { connect } from 'react-redux';
 import { startGame } from 'constants/actions';
 import { NUM_ITEMS_EASY, NUM_ITEMS_MEDIUM, NUM_ITEMS_HARD } from 'constants/config';
 import getRandomCards from 'helpers/random';
+import { START_GAME_BUTTONS } from 'reducers/app';
 import StartGameButtonsView from './StartGameButtonsView';
 
-export default injector(({ store, dispatch }) => {
-  const { items } = store.ui.goalLoader;
+export function reduceStartGameButtons(items) {
+  return { items };
+};
 
-  return {
-    startEasy: () => dispatch(startGame(getRandomCards(NUM_ITEMS_EASY, items))),
-    startMedium: () => dispatch(startGame(getRandomCards(NUM_ITEMS_MEDIUM, items))),
-    startHard: () => dispatch(startGame(getRandomCards(NUM_ITEMS_HARD, items))),
-  };
-})(StartGameButtonsView);
+export default connect(
+  state => state[START_GAME_BUTTONS],
+  { startGame },
+  ({ items }, { startGame }) => ({
+    startEasy: () => startGame(getRandomCards(NUM_ITEMS_EASY, items)),
+    startMedium: () => startGame(getRandomCards(NUM_ITEMS_MEDIUM, items)),
+    startHard: () => startGame(getRandomCards(NUM_ITEMS_HARD, items)),
+  })
+)(StartGameButtonsView);
