@@ -49,7 +49,7 @@ function* unflipCardsAfterDelay(getProps) {
 }
 
 function* tickTimer(getProps) {
-  let tickStart = getProps.now();
+  let tickStart = getProps().now();
   while (true) { // eslint-disable-line no-constant-condition
     yield getProps().delay(100);
     const tickEnd = getProps().now();

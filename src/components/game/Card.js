@@ -41,12 +41,14 @@ const INITIAL_STATE = {
 };
 
 export function reduceCards(state = INITIAL_STATE, gameState, { type, payload }) {
+  let nextCards = state.cards;
+
   const doUnflipCard = (id) => {
     if (id !== null) {
       nextCards[id] = {
         ...nextCards[id],
         isSelected: false,
-        isFaceUp: gameState.cards[id].matched,
+        isFaceUp: gameState.items[gameState.cards[id].itemId].matched,
         isCorrect: false,
         isWrong: false,
       };
@@ -59,13 +61,15 @@ export function reduceCards(state = INITIAL_STATE, gameState, { type, payload })
         ...nextCards[id],
         isSelected: true,
         isFaceUp: true,
-        isCorrect: gameState.secondCardId !== null && gameState.cards[id].matched,
-        isWrong: gameState.secondCardId !== null && !gameState.cards[id].matched,
+        isCorrect: (
+          gameState.secondCardId !== null && gameState.items[gameState.cards[id].itemId].matched
+        ),
+        isWrong: (
+          gameState.secondCardId !== null && !gameState.items[gameState.cards[id].itemId].matched
+        ),
       };
     }
   };
-
-  let nextCards = state.cards;
 
   switch (type) {
     case startGame.type:
@@ -102,7 +106,8 @@ export function reduceCards(state = INITIAL_STATE, gameState, { type, payload })
 export default connect(
   (state, { id }) => state[CARDS].cards[id],
   { flipCard },
-  (stateProps, { flipCard }, { id }) => ({
+  (cardState, { flipCard }, { id }) => ({
+    ...cardState,
     onClick: () => flipCard(id),
   })
 )(CardView);

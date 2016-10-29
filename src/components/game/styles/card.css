@@ -20,6 +20,10 @@
     cursor: default;
 }
 
+.card:focus {
+  outline: none;
+}
+
 .card-contents {
     /* Center vertically. */
     position: absolute;

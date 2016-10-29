@@ -13,7 +13,7 @@ import { DEFAULT_LANGUAGE } from 'constants/i18n';
 window.actions = [];
 const actionLogger = () => (next) => (action) => {
   window.actions.push(action);
-  window.localStorage.actions = JSON.stringify(window.actions);
+  //window.localStorage.actions = JSON.stringify(window.actions);
   return next(action);
 };
 

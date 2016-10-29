@@ -12,9 +12,9 @@ import { reduceCards } from 'components/game/Card';
 
 export const CURRENT_LANGUAGE = 'currentLanguage';
 export const GOAL_ITEMS = 'goalItems';
-export const ALL_ITEMS_MATCHED = 'allItemsMatched';
 export const GAME_STATE = 'gameState';
 export const GAME_TIMER = 'gameTimer';
+// Views
 export const TRANSLATOR = 'translator';
 export const LANGUAGE_SWITCHER = 'languageSwitcher';
 export const GOAL_LOADER = 'goalLoader';
@@ -28,15 +28,18 @@ export default function reduceApp(state = {}, action) {
   const currentLanguage = reduceCurrentLanguage(state[CURRENT_LANGUAGE], action);
   const gameState = reduceGameState(state[GAME_STATE], action);
   const gameTimer = reduceGameTimer(state[GAME_TIMER], action);
-  const allItemsMatched = reduceAllItemsMatched(state[ALL_ITEMS_MATCHED], gameState.items);
   const goalItems = reduceGoalItems(state[GOAL_ITEMS], action);
 
   return {
     [CURRENT_LANGUAGE]: currentLanguage,
+    [GAME_STATE]: gameState,
+    [GAME_TIMER]: gameTimer,
+    [GOAL_ITEMS]: goalItems,
+    // Views
     [TRANSLATOR]: reduceTranslator(currentLanguage),
     [LANGUAGE_SWITCHER]: reduceLanguageSwitcher(currentLanguage),
     [GOAL_LOADER]: reduceGoalLoader(state[GOAL_LOADER], action),
-    [GAME_LAUNCHER]: reduceGameLauncher(state[GAME_LAUNCHER], allItemsMatched.allMatched, action),
+    [GAME_LAUNCHER]: reduceGameLauncher(state[GAME_LAUNCHER], gameState.items, action),
     [GAME_RESULTS]: reduceGameResults(
       gameState.items,
       gameTimer.timeElapsedString,
@@ -84,8 +87,12 @@ function reduceGameState(state = INITIAL_GAME_STATE, action) {
         cards: payload.cards.map(({ itemId, side }, index) => ({ id: index, itemId, side })),
       };
     case flipCard.type:
-      // Don't do anything if the card is already selected.
-      if (payload === state.firstCardId || payload === state.secondCardId) {
+      // Don't do anything if the card is already selected or matched.
+      if (
+        payload === state.firstCardId ||
+        payload === state.secondCardId ||
+        state.items[state.cards[payload].itemId].matched
+      ) {
         return state;
       }
 
@@ -95,6 +102,7 @@ function reduceGameState(state = INITIAL_GAME_STATE, action) {
       } else if (state.secondCardId === null) {
         // If one card is selected.
         const updatedState = {
+          ...state,
           secondCardId: payload,
           numAttempts: state.numAttempts + 1,
         };
@@ -112,9 +120,9 @@ function reduceGameState(state = INITIAL_GAME_STATE, action) {
               item
             )),
           };
-        } else {
-          return updatedState;
         }
+
+        return updatedState;
       } else {
         // If two cards are selected.
         return {
@@ -142,7 +150,9 @@ const INITIAL_TIMER_STATE = {
 };
 
 function reduceGameTimer(state = INITIAL_TIMER_STATE, { type, payload }) {
-  if (type === updateGameTimer.type) {
+  if (type === startGame.type) {
+    return INITIAL_TIMER_STATE;
+  } else if (type === updateGameTimer.type) {
     // Store the milliseconds elapsed instead of just seconds so the timer is more accurate.
     const millisecondsElapsed = state.millisecondsElapsed + payload;
     const secondsElapsed = Math.floor(millisecondsElapsed / 1000);
@@ -169,16 +179,4 @@ function formatMinutes(secondsElapsed) {
   const secondsString = seconds < 10 ? `0${seconds}` : seconds;
 
   return `${minutes}:${secondsString}`;
-}
-
-function reduceAllItemsMatched(state = { items: null, allMatched: false }, nextItems) {
-  if (state.items !== nextItems) {
-    // Don't recompute allMatched unless items change.
-    return {
-      items: state.items,
-      allMatched: !!state.items && state.items.every(item => item.matched),
-    };
-  }
-
-  return state;
 }

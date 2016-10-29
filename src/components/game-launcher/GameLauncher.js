@@ -7,14 +7,27 @@ import GameLauncherView, {
   MODE_NOT_STARTED, MODE_STARTED, MODE_RESULTS,
 } from './GameLauncherView';
 
-export function reduceGameLauncher(viewState = {}, allItemsMatched, action) {
-  return {
-    mode: reduceMode(viewState.mode, action),
-    allItemsMatched,
-  };
+const INITIAL_STATE = {
+  mode: MODE_NOT_STARTED,
+  items: null,
+  allItemsMatched: false,
+};
+
+export function reduceGameLauncher(viewState = {}, items, action) {
+  const mode = reduceMode(viewState.mode, action);
+
+  if (viewState.items === items) {
+    return { ...viewState, mode };
+  } else {
+    return {
+      mode,
+      items,
+      allItemsMatched: !!items && items.every(item => item.matched),
+    };
+  }
 }
 
-function reduceMode(mode = MODE_NOT_STARTED, { type }) {
+function reduceMode(mode, { type }) {
   switch (type) {
     case startGame.type:
       return MODE_STARTED;

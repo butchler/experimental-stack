@@ -4,7 +4,7 @@ import React, { PropTypes } from 'react';
 import Card from 'components/game/Card';
 import T from 'components/T';
 
-export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
+export default function GameView({ timeElapsed, numAttempts, cards, quitGame }) {
   return (
     <div className="game">
       <div className="game-info">
@@ -20,7 +20,7 @@ export default function GameView({ timeElapsed, numAttempts, cards, onQuit }) {
         {cards.map(card => <Card key={card.id} id={card.id} />)}
       </div>
 
-      <button className="button" onClick={onQuit}><T>quitGame</T></button>
+      <button className="button" onClick={quitGame}><T>quitGame</T></button>
     </div>
   );
 }
@@ -29,5 +29,5 @@ GameView.propTypes = {
   timeElapsed: PropTypes.string.isRequired,
   numAttempts: PropTypes.number.isRequired,
   cards: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onQuit: PropTypes.func.isRequired,
+  quitGame: PropTypes.func.isRequired,
 };
