@@ -11,7 +11,7 @@ import { DEFAULT_LANGUAGE } from 'constants/i18n';
 
 // Initialize store.
 window.actions = [];
-const actionLogger = () => (next) => (action) => {
+const actionLogger = () => next => (action) => {
   window.actions.push(action);
   //window.localStorage.actions = JSON.stringify(window.actions);
   return next(action);

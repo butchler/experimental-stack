@@ -13,7 +13,7 @@ const INITIAL_STATE = {
   allItemsMatched: false,
 };
 
-export function reduceGameLauncher(viewState = {}, items, action) {
+export function reduceGameLauncher(viewState = INITIAL_STATE, items, action) {
   const mode = reduceMode(viewState.mode, action);
 
   if (viewState.items === items) {
