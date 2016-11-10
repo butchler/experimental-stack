@@ -181,3 +181,23 @@ export const quizzesReducer = createReducer(
     return clone;
   },
 });
+
+
+
+// QuizList.js
+export const quizListReducer = createReducer(
+  [], {
+  [addQuiz]: (quizIds, id) =>  [...quizIds, id],
+  [removeQuiz]: (quizIds, id) => quizIds.filter(quizId => quizId !== id),
+});
+
+// Quiz.js
+export const quizzesReducer = createReducer(
+  {}, {
+  [addQuiz]: (quizzes, id) => ({ ...quizzes, [id]: { questions: [`${id}-first`] } }),
+  [removeQuiz]: (quizzes, id) => {
+    const clone = { ...quizzes };
+    delete clone[id];
+    return clone;
+  },
+});
