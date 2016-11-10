@@ -155,3 +155,29 @@ export default class Provider extends Component {
 export default function createReducer(initialState, actionHandlers) {
   // TODO
 }
+
+
+// QuizList.js
+export const quizListReducer = createReducer(
+  { lastId: 0, quizIds: [] }, {
+  [addQuiz]: ({ lastId, quizIds }) => ({
+    lastId: lastId + 1,
+    quizIds: [...quizIds, lastId + 1],
+  }),
+  [removeQuiz]: ({ lastId, quizIds }, id) => ({
+    lastId,
+    quizIds: quizIds.filter(quizId => quizId !== id),
+  }),
+});
+
+// Quiz.js
+export const quizzesReducer = createReducer(
+  {},
+  { quizList: quizListReducer }, {
+  [addQuiz]: (quizzes, _, { quizList }) => ({ ...quizzes, [quizList.lastId]: { questions: [0] } }),
+  [removeQuiz]: (quizzes, id) => {
+    const clone = { ...quizzes };
+    delete clone[id];
+    return clone;
+  },
+});
