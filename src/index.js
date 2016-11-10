@@ -201,3 +201,17 @@ export const quizzesReducer = createReducer(
     return clone;
   },
 });
+
+// Question.js
+export const questionsReducer = Reducer(
+  {}, { quizzes: quizzesReducer }, {
+  [addQuiz]: (questions, id) => ({ ...questions, { [`${id}-first`]: { text: '', answers: [] } }),
+  [removeQuiz]: (questions, id, { quizzes }) => {
+    const clone = { ...questions };
+    const quiz = quizzes[id];
+    quiz.questions.forEach(questionId => {
+      delete clone[questionId];
+    });
+    return clone;
+  },
+});
