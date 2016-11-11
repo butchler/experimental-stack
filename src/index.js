@@ -204,8 +204,14 @@ export const quizzesReducer = createReducer(
 
 // Question.js
 export const questionsReducer = Reducer(
-  {}, { quizzes: quizzesReducer }, {
-  [addQuiz]: (questions, id) => ({ ...questions, { [`${id}-first`]: { text: '', answers: [] } }),
+  { questions: {}, quizzes: null, prevQuizzes: null }, {
+  [addQuiz]: (state, id) => ({
+    ...state,
+    questions: {
+      ...state.questions,
+      { [`${id}-first`]: { text: '', answers: [] } }
+    },
+  ),
   [removeQuiz]: (questions, id, { quizzes }) => {
     const clone = { ...questions };
     const quiz = quizzes[id];
