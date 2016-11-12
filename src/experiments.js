@@ -67,7 +67,7 @@ export default subscribe(quizListReducer, [addQuiz, removeQuiz])(QuizListView);
 // Quiz.js
 import { Record, List, Map } from 'immutable';
 import { Reducer } from 'globals/store';
-import { addQuiz, removeQuiz } from 'constants/actions';
+import { addQuiz, removeQuiz, addQuestion, removeQuestion } from 'constants/actions';
 import subscribe from 'helpers/subscribe';
 import QuizView from './QuizView';
 
@@ -76,7 +76,11 @@ const Quiz = Record({ questionIds: List() });
 
 export const quizzesReducer = Reducer(State(), [
   [addQuiz, (state, id) => state.setIn(['quizzes', id], Quiz({ questionIds: List([`${id}-first`]) }))],
-  [removeQuiz, (state, id) => state.removeId(['quizzes', id])],
+  [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
+  [addQuestion, (state, { quizId, questionId }) => state.updateIn(['quizzes', quizId],
+    quiz => quiz.questionIds.push(questionId))],
+  [removeQuestion, (state, { quizId, questionId }) => state.updateIn(['quizzes', quizId],
+    quiz => quiz.questionIds.filter(id => id !== questionId))],
 ]);
 
 export default subscribe(quizzesReducer, null, ({ quizzes }, { id }) => quizzes.get(id))(QuizView);
@@ -84,7 +88,7 @@ export default subscribe(quizzesReducer, null, ({ quizzes }, { id }) => quizzes.
 // Question.js
 import { Record, List, Map } from 'immutable';
 import { Reducer } from 'globals/store';
-import { addQuiz, removeQuiz } from 'constants/actions';
+import { addQuiz, removeQuiz, addQuestion, removeQuestion } from 'constants/actions';
 import { quizzesReducer } from 'components/Quiz';
 import subscribe from 'helpers/subscribe';
 import QuestionView from './QuestionView';
@@ -107,8 +111,21 @@ export const questionsReducer = Reducer(State(), [
     const removedQuiz = state.prevQuizzes.get(id);
     removedQuiz.questionIds.forEach(questionId => questions.remove(questionId));
   }))],
+  [addQuestion, (state, { questionId }) => state.setIn(['questions', questionId], Question())],
+  [removeQuestion, (state, { questionId }) => state.removeIn(['questions', questionId])],
 ]);
 
 export default subscribe(questionsReducer, null, ({ questions }, { id }) => questions.get(id))(QuestionView);
 
-// TODO: Answer.js
+// Answer.js
+const State = Record({ answers: Map() });
+const Answer = Record({ text: '', isCorrectAnswer: false });
+
+export const answersReducer(State(), [
+  [addAnswer, (state, id) => state.set(id, Answer())],
+  [removeAnswer, (state. id) => state.remove(id)],
+]);
+
+export default subscribe(answersReducer, null, ({ answers }, { id }) => answers.get(id))(AnswerView);
+
+// TODO: Try to make answer state nested.
