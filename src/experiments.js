@@ -122,8 +122,11 @@ const State = Record({ quizzes: Map() });
 const Answer = Record({ text: '', isCorrectAnswer: false });
 
 export const answersReducer(State(), [
+  [addQuiz, (state, { quizId }) =>
+    state.setIn(['quizzes', quizId], Map())],
+  [addAnswer, (state, { quizId, questionId }) =>
+    state.setIn(['quizzes', quizId, questionId], Map())],
   [addAnswer, (state, { quizId, questionId, answerId }) =>
-    // TODO: Make sure maps exist.
     state.setIn(['quizzes', quizId, questionId, answerId], Answer())],
   [removeAnswer, (state. { quizId, questionId, answerId }) =>
     state.removeIn(['quizzes', quizId, questionId, answerId])],
@@ -133,6 +136,9 @@ export const answersReducer(State(), [
     state.removeIn(['quizzes', quizId]),
 ]);
 
-export default subscribe(answersReducer, null, ({ answers }, { id }) => answers.get(id))(AnswerView);
-
-// TODO: Try to make answer state nested.
+export default subscribe(
+  answersReducer,
+  null,
+  ({ answers }, { quizId, questionId, answerId }) =>
+    quizzes.getIn([quizId, questionId, answerId])
+)(AnswerView);
