@@ -118,12 +118,19 @@ export const questionsReducer = Reducer(State(), [
 export default subscribe(questionsReducer, null, ({ questions }, { id }) => questions.get(id))(QuestionView);
 
 // Answer.js
-const State = Record({ answers: Map() });
+const State = Record({ quizzes: Map() });
 const Answer = Record({ text: '', isCorrectAnswer: false });
 
 export const answersReducer(State(), [
-  [addAnswer, (state, id) => state.set(id, Answer())],
-  [removeAnswer, (state. id) => state.remove(id)],
+  [addAnswer, (state, { quizId, questionId, answerId }) =>
+    // TODO: Make sure maps exist.
+    state.setIn(['quizzes', quizId, questionId, answerId], Answer())],
+  [removeAnswer, (state. { quizId, questionId, answerId }) =>
+    state.removeIn(['quizzes', quizId, questionId, answerId])],
+  [removeQuestion, (state, { quizId, questionId }) =>
+    state.removeIn(['quizzes', quizId, questionId])],
+  [removeQuiz, (state, { quizId }) =>
+    state.removeIn(['quizzes', quizId]),
 ]);
 
 export default subscribe(answersReducer, null, ({ answers }, { id }) => answers.get(id))(AnswerView);
