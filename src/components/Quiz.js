@@ -25,5 +25,5 @@ export const quizzesReducer = Reducer(State(), [
 export default subscribe(
   quizzesReducer,
   { addQuestion, removeQuestion },
-  ({ quizzes }, { id }) => quizzes.get(id, Quiz())
+  ({ quizzes }, { quizId }) => quizzes.get(quizId, Quiz())
 )(QuizView);

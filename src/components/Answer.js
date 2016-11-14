@@ -30,5 +30,6 @@ export const answersReducer = Reducer(State(), [
 export default subscribe(
   answersReducer,
   { setAnswerText, toggleAnswerIsCorrect },
-  ({ quizzes }, { quizId, questionId, id }) => quizzes.getIn([quizId, questionId, id], Answer())
+  ({ quizzes }, { quizId, questionId, answerId }) =>
+    quizzes.getIn([quizId, questionId, answerId], Answer())
 )(AnswerView);

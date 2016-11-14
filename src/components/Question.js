@@ -32,6 +32,7 @@ export const questionsReducer = Reducer(State(), [
 export default subscribe(
   questionsReducer,
   { addAnswer, removeAnswer, setQuestionText },
-  ({ quizzes }, { quizId, id }) => quizzes.getIn([quizId, id], Question())
+  ({ quizzes }, { quizId, questionId }) =>
+    quizzes.getIn([quizId, questionId], Question())
 )(QuestionView);
 
