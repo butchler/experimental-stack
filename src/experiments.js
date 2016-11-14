@@ -12,7 +12,7 @@ store.dispatch(init());
 
 ReactDOM.render(
   <Provider store={store}>
-    <Component />
+    <QuizList />
   </Provider>
 );
 
@@ -62,7 +62,10 @@ export const quizListReducer = Reducer(State(), {
   [removeQuiz]: (state, id) => state.set('quizIds', state.quizIds.filter(quizId => quizId !== id)),
 });
 
-export default subscribe(quizListReducer, [addQuiz, removeQuiz])(QuizListView);
+export default subscribe(
+  quizListReducer,
+  { addQuiz, removeQuiz }
+)(QuizListView);
 
 // Quiz.js
 import { Record, List, Map } from 'immutable';
@@ -77,13 +80,23 @@ const Quiz = Record({ questionIds: List() });
 export const quizzesReducer = Reducer(State(), [
   [addQuiz, (state, id) => state.setIn(['quizzes', id], Quiz({ questionIds: List(['first']) }))],
   [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
-  [addQuestion, (state, { quizId, questionId }) => state.updateIn(['quizzes', quizId],
-    quiz => quiz.questionIds.push(questionId))],
-  [removeQuestion, (state, { quizId, questionId }) => state.updateIn(['quizzes', quizId],
-    quiz => quiz.questionIds.filter(id => id !== questionId))],
+  [addQuestion, (state, { quizId, questionId }) => state.updateIn(
+    ['quizzes', quizId],
+    Quiz(),
+    quiz => quiz.questionIds.push(questionId)
+  )],
+  [removeQuestion, (state, { quizId, questionId }) => state.updateIn(
+    ['quizzes', quizId],
+    Quiz(),
+    quiz => quiz.questionIds.filter(id => id !== questionId)
+  )],
 ]);
 
-export default subscribe(quizzesReducer, null, ({ quizzes }, { id }) => quizzes.get(id))(QuizView);
+export default subscribe(
+  quizzesReducer,
+  { addQuestion, removeQuestion },
+  ({ quizzes }, { id }) => quizzes.get(id, Quiz())
+)(QuizView);
 
 // Question.js
 import { Record, List, Map } from 'immutable';
@@ -97,40 +110,40 @@ const State = Record({ quizzes: Map(), });
 const Question = Record({ text: '', answerIds: List() });
 
 export const questionsReducer = Reducer(State(), [
-  [addQuestion, (state, { quizId, questionId }) => state.setIn(['quizzes', quizId, questionId], Question())],
+  [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
+  //[addQuestion, (state, { quizId, questionId }) => state.setIn(['quizzes', quizId, questionId], Question())],
   [removeQuestion, (state, { quizId, questionId }) => state.removeIn(['quizzes', quizId, questionId])],
-  [addAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(['quizzes', quizId, questionId, 'answerIds'],
-    ids => ids.push(answerIds))],
-  [removeAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(['quizzes', quizId, questionId, 'answerIds'],
-    ids => ids.filter(id => id != answerId))],
-  [removeQuiz, (state, id) => state.removeIn(['quizzes', id]),
+  [addAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(
+    ['quizzes', quizId, questionId],
+    Question(),
+    question => question.updateIn('answerIds', ids => ids.push(answerId))
+  )],
+  [removeAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(
+    ['quizzes', quizId, questionId, 'answerIds'],
+    List(),
+    ids => ids.filter(id => id != answerId)
+  )],
 ]);
 
 export default subscribe(
   questionsReducer,
-  null,
-  ({ quizzes }, { quizId, id }) => quizzes.getIn([quizId, id], Question()))(QuestionView);
+  { addAnswer, removeAnswer },
+  ({ quizzes }, { quizId, id }) => quizzes.getIn([quizId, id], Question())
+)(QuestionView);
 
 // Answer.js
 const State = Record({ quizzes: Map() });
 const Answer = Record({ text: '', isCorrectAnswer: false });
 
 export const answersReducer(State(), [
-  [addAnswer, (state, { quizId, questionId, answerId }) =>
-    // TODO: Make sure Maps exist.
-    state.setIn(['quizzes', quizId, questionId, answerId], Answer())],
-  [removeAnswer, (state. { quizId, questionId, answerId }) =>
-    state.removeIn(['quizzes', quizId, questionId, answerId])],
-  [removeQuestion, (state, { quizId, questionId }) =>
-    state.removeIn(['quizzes', quizId, questionId])],
-  [removeQuiz, (state, { quizId }) =>
-    state.removeIn(['quizzes', quizId]),
+  [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
+  [removeQuestion, (state, { quizId, questionId }) => state.removeIn(['quizzes', quizId, questionId])],
+  //[addAnswer, (state, { quizId, questionId, answerId }) => state.setIn(['quizzes', quizId, questionId, answerId], Answer())],
+  [removeAnswer, (state. { quizId, questionId, answerId }) => state.removeIn(['quizzes', quizId, questionId, answerId])],
 ]);
 
 export default subscribe(
   answersReducer,
   null,
-  ({ answers }, { quizId, questionId, answerId }) =>
-    // Return an empty answer if the answer doesn't exist yet.
-    quizzes.getIn([quizId, questionId, answerId], Answer())
+  ({ answers }, { quizId, questionId, id }) => quizzes.getIn([quizId, questionId, id], Answer())
 )(AnswerView);
