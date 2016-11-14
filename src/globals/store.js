@@ -1,3 +1,7 @@
 import Store from 'helpers/Store';
 
-export default new Store();
+const GlobalStore = Store();
+
+export const Action = GlobalStore.Action;
+export const Reducer = GlobalStore.Reducer;
+export const createStoreInstance = GlobalStore.createStoreInstance;

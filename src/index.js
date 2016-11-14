@@ -1,3 +1,4 @@
+/* global document */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStoreInstance } from 'globals/store';
@@ -12,5 +13,6 @@ store.dispatch(init.create());
 ReactDOM.render(
   <Provider store={store}>
     <QuizList />
-  </Provider>
+  </Provider>,
+  document.getElementById('app-container')
 );
