@@ -8,7 +8,7 @@ import { init } from 'constants/actions';
 
 const store = createStoreInstance();
 
-store.dispatch(init());
+store.dispatch(init.create());
 
 ReactDOM.render(
   <Provider store={store}>
@@ -29,12 +29,46 @@ export default class Store {
     this.nextReducerId = 0;
   }
 
-  Reducer(initialState, actionHandlers) {
-    // TODO
+  Reducer(initialState, handlerList) {
+    const id = this.nextReducerId;
+    const actionHandlers = {};
+
+    handlerList.forEach(([action, handler]) => {
+      if (actionHandlers.hasOwnProperty(action.type)) {
+        throw new Error(`Reducer contained two separate handlers for the action type '${action.type}'.`);
+      }
+
+      actionHandlers[action.type] = handler;
+    });
+
+    const reducer = {
+      id,
+      initialState: initialState,
+      actionHandlers,
+    };
+
+    this.reducer[id] = reducer;
+    this.nextReducerId += 1;
+
+    return reducer;
   }
 
   Action(type, mapArgsToPayload) {
-    // TODO
+    if (this.actions.hasOwnProperty(type)) {
+      throw new Error(`An action with the type '${type}' already exists.`);
+    }
+
+    const action = {
+      type,
+      create: (...args) => ({
+        type,
+        payload: mapArgsToPayload(...args),
+      }),
+    };
+
+    this.actions[type] = action;
+
+    return action;
   }
 
   createStoreInstance() {
@@ -131,10 +165,10 @@ export default class Provider extends React.Component {
   getChildContext() {
     return {
       onReducerUpdated: this.props.store.onReducerUpdated,
+      dispatch: this.props.store.dispatch,
     };
   }
 
-  // TODO
   render() {
     return React.Children.only(this.props.children);
   }
@@ -143,6 +177,7 @@ export default class Provider extends React.Component {
 Provider.propTypes = {
   store: PropTypes.shape({
     onReducerUpdated: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired,
   }).isRequired,
 };
 
@@ -160,14 +195,19 @@ export default function subscribe(reducer, actions, mapStateAndPropsToProps = de
         this.state = {
           reducerState: reducer.initialState,
         };
-      }
 
-      componentDidMount() {
-        this.unsubscribe = onReducerUpdated(reducer, reducerState => this.setState({ reducerState }));
+        this.unsubscribe = this.context.onReducerUpdated(reducer, reducerState => this.setState({ reducerState }));
+
+        this.dispatchProps = {};
+        const dispatch = this.context.dispatch;
+        Object.keys(actions).forEach(propName => {
+          const createAction = actions[propName].create;
+          dispatchProps[propName] = (...args) => dispatch(createAction(...args));
+        });
       }
 
       componentWillUnmount() {
-        this.unsubscribe && this.unsubscribe();
+        this.unsubscribe();
       }
 
       render() {
@@ -180,12 +220,13 @@ export default function subscribe(reducer, actions, mapStateAndPropsToProps = de
           propsObject = props;
         }
 
-        return <ViewComponent {...propsObject} />;
+        return <ViewComponent {...this.dispatchProps} {...propsObject} />;
       }
     }
 
     Subscriber.contextTypes = {
       onReducerUpdated: PropTypes.func,
+      dispatch: PropTypes.func,
     };
 
     return Subscriber;
