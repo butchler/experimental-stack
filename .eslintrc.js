@@ -27,5 +27,9 @@ module.exports = {
     'no-use-before-define': 0,
     'no-else-return': 0,
     'no-use-before-define': 0,
+    'new-cap': ['error', {
+      newIsCap: true,
+      capIsNew: false,
+    }],
   },
 };
