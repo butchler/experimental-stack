@@ -98,7 +98,7 @@ const Question = Record({ text: '', answerIds: List() });
 
 export const questionsReducer = Reducer(State(), [
   // Add a blank question for each questionId in the added quiz.
-  [addQuiz, (state, id) => state.set('questions', state.questions.merge(
+  [addQuiz, (state, id) => state.set('questions', state.quizzes.merge(
     state.quizzes.get(id).questionIds.map(questionId => [questionId, Question()])
   ))],
   // Save references to the current and previous set of quizzes.
