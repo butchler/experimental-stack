@@ -23,6 +23,12 @@ export default new Store();
 
 // helpers/Store.js
 export default class Store {
+  constructor() {
+    this.actions = {};
+    this.reducers = {};
+    this.nextReducerId = 0;
+  }
+
   Reducer(initialState, actionHandlers) {
     // TODO
   }
@@ -32,20 +38,170 @@ export default class Store {
   }
 
   createStoreInstance() {
-    // TODO
+    const actionTypeToReducerIds = {};
+    const reducerStates = {};
+    const reducerCallbacks = {};
+    let nextCallbackId = 0;
+
+    // Initialize reducer state and callback sets.
+    Object.keys(this.reducers).forEach(reducerId => {
+      const reducer = this.reducers[reducerId];
+
+      reducerStates[reducerId] = reducer.initialState;
+      reducerCallbacks[reducerId] = {};
+
+      Object.keys(reducer.actionHandlers).forEach(actionType => {
+        if (!actionTypeToReducerIds[actionType]) {
+          actionTypeToReducerIds[actionType] = [reducerId];
+        } else {
+          actionTypeToReducerIds[actionType].push(reducerId);
+        }
+      });
+    });
+
+    return {
+      dispatch(action) {
+        const reducerIds = actionTypeToReducerIds[action.type];
+        reducerIds.forEach(reducerId => {
+          const state = reducerStates[reducerId];
+          const reducer = this.reducers[reducerId];
+          const handler = reducer.actionHandlers[action.type];
+          let newState;
+
+          // Call reducer's handler for the dispatched action.
+          try {
+            newState = handler(state, action);
+          } catch (error) {
+            // TODO: Throw errors instead of just logging them?
+            console.log(`Error in action handler for '${action.type}':`, error);
+            return;
+          }
+
+          // We don't need to do anything if the state didn't change.
+          if (state === newState) {
+            return;
+          }
+
+          // Update state.
+          reducerStates[reducerId] = newState;
+
+          // Call reducer callbacks.
+          const callbacks = reducerCallbacks[reducerId];
+          Object.keys(callbacks).forEach(key => {
+            const callback = callbacks[key];
+            try {
+              callback(newState);
+            } catch (error) {
+              // TODO: Require names for reducers, for debugging purposes?
+              console.log('Error in subscriber:', error);
+            }
+          });
+        });
+
+        return action;
+      },
+      onReducerUpdated(reducer, callback) {
+        // Save callback id.
+        const callbackId = nextCallbackId;
+        nextCallbackId += 1;
+
+        // Add callback.
+        const callbacks = reducerCallbacks[reducer.id];
+        callbacks[callbackId] = callback;
+
+        // Create unsubscribe function.
+        const unsubscribe = () => {
+          delete callbacks[callbackId];
+        };
+
+        return unsubscribe;
+      },
+    };
   }
 }
 
 // helpers/Provider.js
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 
-export default class Provider extends Component {
+export default class Provider extends React.Component {
+  constructor() {
+    super();
+  }
+
+  getChildContext() {
+    return {
+      onReducerUpdated: this.props.store.onReducerUpdated,
+    };
+  }
+
   // TODO
+  render() {
+    return React.Children.only(this.props.children);
+  }
 }
 
+Provider.propTypes = {
+  store: PropTypes.shape({
+    onReducerUpdated: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+Provider.childContextTypes = {
+  onReducerUpdated: PropTypes.func,
+};
+
 // helpers/subscribe.js
-export default function subscribe(reducer, actions, mapStateAndPropsToProps) {
-  // TODO
+export default function subscribe(reducer, actions, mapStateAndPropsToProps = defaultMapStateAndProps) {
+  return ViewComponent => {
+    class Subscriber extends React.Component {
+      constructor() {
+        super();
+
+        this.state = {
+          reducerState: reducer.initialState,
+        };
+      }
+
+      componentDidMount() {
+        this.unsubscribe = onReducerUpdated(reducer, reducerState => this.setState({ reducerState }));
+      }
+
+      componentWillUnmount() {
+        this.unsubscribe && this.unsubscribe();
+      }
+
+      render() {
+        const props = mapStateAndPropsToProps(this.state.reducerState, this.props);
+        let propsObject;
+
+        if (props && typeof props.toJS === 'function') {
+          propsObject = props.toJS();
+        } else {
+          propsObject = props;
+        }
+
+        return <ViewComponent {...propsObject} />;
+      }
+    }
+
+    Subscriber.contextTypes = {
+      onReducerUpdated: PropTypes.func,
+    };
+
+    return Subscriber;
+  };
+}
+
+function defaultMapStateAndProps(state, props) {
+  let stateObject;
+
+  if (state && typeof state.toJS === 'function') {
+    stateObject = state.toJS();
+  } else {
+    stateObject = state;
+  }
+
+  return { ...stateObject, ...props };
 }
 
 // QuizList.js
