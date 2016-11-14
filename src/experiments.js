@@ -101,8 +101,7 @@ export default subscribe(
 // Question.js
 import { Record, List, Map } from 'immutable';
 import { Reducer } from 'globals/store';
-import { addQuiz, removeQuiz, addQuestion, removeQuestion } from 'constants/actions';
-import { quizzesReducer } from 'components/Quiz';
+import { removeQuiz, removeQuestion, addAnswer, removeAnswer, setQuestionText } from 'constants/actions';
 import subscribe from 'helpers/subscribe';
 import QuestionView from './QuestionView';
 
@@ -111,6 +110,8 @@ const Question = Record({ text: '', answerIds: List() });
 
 export const questionsReducer = Reducer(State(), [
   [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
+  // It's not technically necessary to initialize the question because Question() will be used as
+  // the default value if a given question is not found.
   //[addQuestion, (state, { quizId, questionId }) => state.setIn(['quizzes', quizId, questionId], Question())],
   [removeQuestion, (state, { quizId, questionId }) => state.removeIn(['quizzes', quizId, questionId])],
   [addAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(
@@ -123,27 +124,47 @@ export const questionsReducer = Reducer(State(), [
     List(),
     ids => ids.filter(id => id != answerId)
   )],
+  [setQuestionText, (state, { quizId, questionId, text }) => state.updateIn(
+    ['quizzes', quizId, questionId],
+    Question(),
+    question => question.set('text', text)
+  )],
 ]);
 
 export default subscribe(
   questionsReducer,
-  { addAnswer, removeAnswer },
+  { addAnswer, removeAnswer, setQuestionText },
   ({ quizzes }, { quizId, id }) => quizzes.getIn([quizId, id], Question())
 )(QuestionView);
 
 // Answer.js
+import { Record, List, Map } from 'immutable';
+import { Reducer } from 'globals/store';
+import { removeQuiz, removeQuestion, removeAnswer, setAnswerText, toggleAnswerIsCorrect } from 'constants/actions';
+import subscribe from 'helpers/subscribe';
+import AnswerView from './AnswerView';
+
 const State = Record({ quizzes: Map() });
-const Answer = Record({ text: '', isCorrectAnswer: false });
+const Answer = Record({ text: '', isCorrect: false });
 
 export const answersReducer(State(), [
   [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
   [removeQuestion, (state, { quizId, questionId }) => state.removeIn(['quizzes', quizId, questionId])],
-  //[addAnswer, (state, { quizId, questionId, answerId }) => state.setIn(['quizzes', quizId, questionId, answerId], Answer())],
   [removeAnswer, (state. { quizId, questionId, answerId }) => state.removeIn(['quizzes', quizId, questionId, answerId])],
+  [setAnswerText, (state, { quizId, questionId, answerId, text }) => state.updateIn(
+    ['quizzes', quizId, questionId, answerId],
+    Answer(),
+    answer => answer.set('text', text)
+  )],
+  [toggleAnswerIsCorrect, (state, { quizId, questionId, answerId }) => state.updateIn(
+    ['quizzes', quizId, questionId, answerId],
+    Answer(),
+    answer => answer.update('isCorrect', isCorrect => !isCorrect)
+  )],
 ]);
 
 export default subscribe(
   answersReducer,
-  null,
+  { setAnswerText, toggleAnswerIsCorrect },
   ({ answers }, { quizId, questionId, id }) => quizzes.getIn([quizId, questionId, id], Answer())
 )(AnswerView);
