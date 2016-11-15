@@ -22,24 +22,22 @@ export default function Store() {
         actionHandlers,
       };
 
-      reducer[id] = reducer;
+      reducers[id] = reducer;
       nextReducerId += 1;
 
       return reducer;
     },
 
-    Action(type, mapArgsToPayload = payload => payload) {
+    Action(type, mapPayload = payload => payload) {
       if ({}.hasOwnProperty.call(actions, type)) {
         throw new Error(`An action with the type '${type}' already exists.`);
       }
 
-      const action = {
+      const action = payload => ({
         type,
-        create: (...args) => ({
-          type,
-          payload: mapArgsToPayload(...args),
-        }),
-      };
+        payload: mapPayload(payload),
+      });
+      action.type = type;
 
       actions[type] = action;
 
@@ -70,7 +68,7 @@ export default function Store() {
 
       return {
         dispatch(action) {
-          const reducerIds = actionTypeToReducerIds[action.type];
+          const reducerIds = actionTypeToReducerIds[action.type] || [];
           reducerIds.forEach((reducerId) => {
             const state = reducerStates[reducerId];
             const reducer = reducers[reducerId];
@@ -79,7 +77,7 @@ export default function Store() {
 
             // Call reducer's handler for the dispatched action.
             try {
-              newState = handler(state, action);
+              newState = handler(state, action.payload);
             } catch (error) {
               // TODO: Throw errors instead of just logging them?
               console.log(`Error in action handler for '${action.type}':`, error);

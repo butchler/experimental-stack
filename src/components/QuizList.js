@@ -13,5 +13,5 @@ export const quizListReducer = Reducer(State(), [
 
 export default subscribe(
   quizListReducer,
-  { addQuiz, removeQuiz }
+  { addQuiz }
 )(QuizListView);

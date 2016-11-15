@@ -8,7 +8,7 @@ import { init } from 'constants/actions';
 
 const store = createStoreInstance();
 
-store.dispatch(init.create());
+store.dispatch(init());
 
 ReactDOM.render(
   <Provider store={store}>

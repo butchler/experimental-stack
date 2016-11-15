@@ -25,4 +25,5 @@ Provider.propTypes = {
 
 Provider.childContextTypes = {
   onReducerUpdated: PropTypes.func,
+  dispatch: PropTypes.func,
 };

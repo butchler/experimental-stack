@@ -1,29 +1,30 @@
 import React, { PropTypes } from 'react';
+import { Map, Record } from 'immutable';
 
 export default function subscribe(
   reducer,
   actions,
-  mapStateAndPropsToProps = defaultMapStateAndProps
+  mapStateAndPropsToProps = state => state
 ) {
   return (ViewComponent) => {
     class Subscriber extends React.Component {
-      constructor() {
-        super();
+      constructor(props, context) {
+        super(props, context);
 
         this.state = {
           reducerState: reducer.initialState,
         };
 
-        this.unsubscribe = this.context.onReducerUpdated(
+        this.unsubscribe = context.onReducerUpdated(
           reducer,
           reducerState => this.setState({ reducerState })
         );
 
         this.dispatchProps = {};
-        const dispatch = this.context.dispatch;
+        const dispatch = context.dispatch;
         Object.keys(actions).forEach((propName) => {
-          const createAction = actions[propName].create;
-          this.dispatchProps[propName] = (...args) => dispatch(createAction(...args));
+          const createAction = actions[propName];
+          this.dispatchProps[propName] = payload => dispatch(createAction(payload, this.props));
         });
       }
 
@@ -32,16 +33,13 @@ export default function subscribe(
       }
 
       render() {
-        const props = mapStateAndPropsToProps(this.state.reducerState, this.props);
-        let propsObject;
+        let stateProps = mapStateAndPropsToProps(this.state.reducerState, this.props);
 
-        if (props && typeof props.toJS === 'function') {
-          propsObject = props.toJS();
-        } else {
-          propsObject = props;
+        if (stateProps instanceof Record || stateProps instanceof Map) {
+          stateProps = stateProps.toObject();
         }
 
-        return <ViewComponent {...this.dispatchProps} {...propsObject} />;
+        return <ViewComponent {...this.dispatchProps} {...stateProps} {...this.props} />;
       }
     }
 
@@ -52,16 +50,4 @@ export default function subscribe(
 
     return Subscriber;
   };
-}
-
-export function defaultMapStateAndProps(state, props) {
-  let stateObject;
-
-  if (state && typeof state.toJS === 'function') {
-    stateObject = state.toJS();
-  } else {
-    stateObject = state;
-  }
-
-  return { ...stateObject, ...props };
 }

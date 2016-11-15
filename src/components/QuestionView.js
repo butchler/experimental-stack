@@ -7,6 +7,7 @@ export default function QuestionView({
   questionId,
   text,
   answerIds,
+  addAnswer,
 }) {
   return (
     <div>
@@ -14,8 +15,10 @@ export default function QuestionView({
 
       <ol>
         {answerIds.map(id =>
-          <li><Answer quizId={quizId} questionId={questionId} answerId={id} /></li>)}
+          <li key={id}><Answer quizId={quizId} questionId={questionId} answerId={id} /></li>)}
       </ol>
+
+      <button onClick={addAnswer}>Add answer</button>
     </div>
   );
 }
@@ -25,4 +28,5 @@ QuestionView.propTypes = {
   questionId: PropTypes.string.isRequired,
   text: PropTypes.string,
   answerIds: ImmutablePropTypes.listOf(PropTypes.string).isRequired,
+  addAnswer: PropTypes.func.isRequired,
 };

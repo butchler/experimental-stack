@@ -15,7 +15,7 @@ export const questionsReducer = Reducer(State(), [
   [addAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(
     ['quizzes', quizId, questionId],
     Question(),
-    question => question.updateIn('answerIds', ids => ids.push(answerId))
+    question => question.update('answerIds', ids => ids.push(answerId))
   )],
   [removeAnswer, (state, { quizId, questionId, answerId }) => state.updateIn(
     ['quizzes', quizId, questionId, 'answerIds'],
@@ -31,7 +31,11 @@ export const questionsReducer = Reducer(State(), [
 
 export default subscribe(
   questionsReducer,
-  { addAnswer, removeAnswer, setQuestionText },
+  {
+    addAnswer: (payload, { quizId, questionId }) => addAnswer({ quizId, questionId }),
+    removeAnswer,
+    setQuestionText
+  },
   ({ quizzes }, { quizId, questionId }) =>
     quizzes.getIn([quizId, questionId], Question())
 )(QuestionView);

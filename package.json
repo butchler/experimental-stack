@@ -50,6 +50,7 @@
   "dependencies": {
     "babel-polyfill": "^6.16.0",
     "immutable": "^3.8.1",
+    "node-uuid": "^1.4.7",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-immutable-proptypes": "^2.1.0",
