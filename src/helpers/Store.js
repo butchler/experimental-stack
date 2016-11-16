@@ -4,11 +4,16 @@ export default function Store() {
   let nextReducerId = 0;
 
   return {
+    // TODO: Make propery prototypes for Action and Reducer.
     Reducer(initialState, handlerList) {
       const id = nextReducerId;
       const actionHandlers = {};
 
       handlerList.forEach(([action, handler]) => {
+        if (typeof action !== 'function' || typeof handler !== 'function') {
+          throw new Error('Reducer handlers must be a pair of action and handler function.');
+        }
+
         if ({}.hasOwnProperty.call(actionHandlers, action.type)) {
           throw new Error(`Reducer contained two separate handlers for the action type '${action.type}'.`);
         }
@@ -66,6 +71,7 @@ export default function Store() {
         });
       });
 
+      // TODO: Add functions to get reducer state for debugging.
       return {
         dispatch(action) {
           const reducerIds = actionTypeToReducerIds[action.type] || [];

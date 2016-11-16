@@ -3,11 +3,11 @@ import shape, { checkShape } from 'helpers/shape';
 import { v4 } from 'node-uuid';
 
 export const init = Action('INIT');
-export const addQuiz = Action('ADD_QUIZ', () => checkShape('string', v4()));
-export const removeQuiz = Action('REMOVE_QUIZ', shape('string'));
+export const addQuiz = Action('ADD_QUIZ', () => ({ quizId: v4() }));
+export const removeQuiz = Action('REMOVE_QUIZ', shape({ quizId: 'string' }));
 export const addQuestion = Action('ADD_QUESTION', ({ quizId }) =>
   checkShape(
-    { quizId: 'string', questionId: 'string' },
+    { quizId: 'string' },
     { quizId, questionId: v4() }
   )
 );
@@ -19,7 +19,7 @@ export const setQuestionText = Action('SET_QUESTION_TEXT', shape({
 }));
 export const addAnswer = Action('ADD_ANSWER', ({ quizId, questionId }) =>
   checkShape(
-    { quizId: 'string', questionId: 'string', answerId: 'string' },
+    { quizId: 'string', questionId: 'string' },
     { quizId, questionId, answerId: v4() }
   )
 );

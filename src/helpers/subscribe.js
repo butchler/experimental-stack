@@ -24,7 +24,7 @@ export default function subscribe(
         const dispatch = context.dispatch;
         Object.keys(actions).forEach((propName) => {
           const createAction = actions[propName];
-          this.dispatchProps[propName] = payload => dispatch(createAction(payload, this.props));
+          this.dispatchProps[propName] = (...args) => dispatch(createAction(this.props, ...args));
         });
       }
 
