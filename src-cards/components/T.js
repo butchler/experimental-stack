@@ -1,15 +1,18 @@
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
+import { Reducer } from 'globals/store';
+import { subscribe } from 'helpers/subscribe';
+import { set } from 'helpers/mutators';
+import { setLanguage } from 'constants/actions';
 import getTranslation from 'helpers/i18n';
-import { TRANSLATOR } from 'reducers/app';
+import { DEFAULT_LANGUAGE } from 'constants/i18n';
 
-export function reduceTranslator(currentLanguage) {
-  return {
-    translate: label => getTranslation(currentLanguage, label),
-  };
-}
+export const tReducer = Reducer({
+  translate: label => getTranslation(DEFAULT_LANGUAGE.code, label),
+}, [
+  [setLanguage, language => set('translate', label => getTranslation(language, label))],
+]);
 
-export default connect(state => state[TRANSLATOR])(T);
+export default subscribe(tReducer)(T);
 
 function T({ translate, children }) {
   return <span>{translate(children)}</span>;
