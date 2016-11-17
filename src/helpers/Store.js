@@ -49,6 +49,14 @@ export default function Store() {
       return action;
     },
 
+    getReducers() {
+      return reducers;
+    },
+
+    getActions() {
+      return actions;
+    },
+
     createStoreInstance() {
       const actionTypeToReducerIds = {};
       const reducerStates = {};
@@ -73,6 +81,10 @@ export default function Store() {
 
       // TODO: Add functions to get reducer state for debugging.
       return {
+        getReducerStates() {
+          return reducerStates;
+        },
+
         dispatch(action) {
           const reducerIds = actionTypeToReducerIds[action.type] || [];
           reducerIds.forEach((reducerId) => {
