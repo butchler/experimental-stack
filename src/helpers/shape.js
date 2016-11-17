@@ -20,6 +20,7 @@ export function checkShape(typeOrShape, object) {
 
     object.forEach(item => checkShape(arrayTypeOrShape, item));
   } else if (typeOrShape && typeof typeOrShape === 'object') {
+    // TODO: Throw an error if input contains any extra keys.
     if (!(object && typeof object === 'object')) {
       throw new TypeError(`shape() expected an object but got type '${typeof object}'.`);
     }
