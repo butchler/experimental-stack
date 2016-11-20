@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import T from 'components/T';
 import GameLauncher from 'components/game-launcher/GameLauncher';
 
-export default function GoalLoaderView({ goalLoaded, errorMessage }) {
+const GoalLoaderView = ({ goalLoaded, errorMessage }) => {
   if (goalLoaded) {
     return <GameLauncher />;
   } else if (errorMessage) {
@@ -17,3 +17,5 @@ GoalLoaderView.propTypes = {
   goalLoaded: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
 };
+
+export default GoalLoaderView;
