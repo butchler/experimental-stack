@@ -1,17 +1,15 @@
-import { connect } from 'react-redux';
+import { Record } from 'immutable';
+import { Reducer } from 'globals/store';
+import subscribe from 'helpers/subscribe';
+import { set } from 'helpers/mutators';
 import { LANGUAGES } from 'constants/i18n';
 import { setLanguage } from 'constants/actions';
-import { LANGUAGE_SWITCHER } from 'reducers/app';
 import LanguageSwitcherView from './LanguageSwitcherView';
 
-export function reduceLanguageSwitcher(currentLanguage) {
-  return {
-    currentLanguage,
-    languages: LANGUAGES,
-  };
-}
+const State = Record({ languages: LANGUAGES, currentLanguage: 'en' });
 
-export default connect(
-  state => state[LANGUAGE_SWITCHER],
-  { setLanguage },
-)(LanguageSwitcherView);
+export const languageSwitcherReducer = Reducer(State(), [
+  [setLanguage, language => set('currentLanguage', language)],
+]);
+
+export default subscribe(languageSwitcherReducer, { setLanguage })(LanguageSwitcherView);
