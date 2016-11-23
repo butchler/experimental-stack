@@ -194,7 +194,8 @@ const Store = () => {
           if (actionCreators) {
             Object.keys(actionCreators).forEach((propName) => {
               const createAction = actionCreators[propName];
-              this.dispatchers[propName] = (...args) => dispatch(createAction(this.props, ...args));
+              this.dispatchers[propName] = (...args) =>
+                dispatch(createAction(this.mergedProps, ...args));
             });
           }
         }
@@ -215,10 +216,12 @@ const Store = () => {
           }
 
           if (mergeProps) {
-            return <ViewComponent {...mergeProps(this.props, state, this.dispatchers)} />;
+            this.mergedProps = mergeProps(this.props, state, this.dispatchers);
           } else {
-            return <ViewComponent {...state} {...this.dispatchers} {...this.props} />;
+            this.mergedProps = { ...state, ...this.dispatchers, ...this.props };
           }
+
+          return React.createElement(ViewComponent, this.mergedProps);
         }
       }
 

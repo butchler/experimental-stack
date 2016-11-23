@@ -13,7 +13,6 @@ export const startGameButtonsReducer = Reducer('StartGameButtons', State(), [
 
 export default subscriber(startGameButtonsReducer, {
   actions: {
-    // TODO: Merge state into props passed to dispatchers.
     startEasy: ({ items }) => startGame(getRandomCards(NUM_ITEMS_EASY, items)),
     startMedium: ({ items }) => startGame(getRandomCards(NUM_ITEMS_MEDIUM, items)),
     startHard: ({ items }) => startGame(getRandomCards(NUM_ITEMS_HARD, items)),
