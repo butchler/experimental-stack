@@ -1,3 +1,5 @@
+import { Map } from 'immutable';
+
 export default function Store() {
   const actions = {};
   const reducers = {};
@@ -82,7 +84,7 @@ export default function Store() {
       // TODO: Add functions to get reducer state for debugging.
       return {
         getReducerStates() {
-          return reducerStates;
+          return Map(reducerStates);
         },
 
         dispatch(action) {

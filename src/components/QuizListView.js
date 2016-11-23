@@ -8,7 +8,7 @@ export default function QuizListView({ quizIds, addQuiz }) {
       {quizIds.map((id, index) =>
         <div key={id}>
           <h3>Quiz {index + 1}</h3>
-          <Quiz quizId={id} />
+          <Quiz path={[id]} />
         </div>
       )}
 

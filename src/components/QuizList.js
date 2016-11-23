@@ -7,8 +7,8 @@ import QuizListView from './QuizListView';
 const State = Record({ quizIds: List() });
 
 export const quizListReducer = Reducer(State(), [
-  [addQuiz, (state, { quizId }) => state.set('quizIds', state.quizIds.push(quizId))],
-  [removeQuiz, (state, { quizId }) =>
+  [addQuiz, (state, { path: [quizId] }) => state.set('quizIds', state.quizIds.push(quizId))],
+  [removeQuiz, (state, { path: [quizId] }) =>
     state.set('quizIds', state.quizIds.filter(id => id !== quizId))],
 ]);
 

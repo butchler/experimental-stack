@@ -10,17 +10,18 @@ const State = Record({ quizzes: Map() });
 const Answer = Record({ text: '', isCorrect: false });
 
 export const answersReducer = Reducer(State(), [
-  [removeQuiz, (state, id) => state.removeIn(['quizzes', id])],
-  [removeQuestion, (state, { quizId, questionId }) => state.removeIn(['quizzes', quizId, questionId])],
-  [removeAnswer, (state, { quizId, questionId, answerId }) => state.removeIn(
+  [removeQuiz, (state, { path: [quizId] }) => state.removeIn(['quizzes', quizId])],
+  [removeQuestion, (state, { path: [quizId, questionId] }) =>
+    state.removeIn(['quizzes', quizId, questionId])],
+  [removeAnswer, (state, { path: [quizId, questionId, answerId] }) => state.removeIn(
     ['quizzes', quizId, questionId, answerId]
   )],
-  [setAnswerText, (state, { quizId, questionId, answerId, text }) => state.updateIn(
+  [setAnswerText, (state, { path: [quizId, questionId, answerId], text }) => state.updateIn(
     ['quizzes', quizId, questionId, answerId],
     Answer(),
     answer => answer.set('text', text)
   )],
-  [toggleAnswerIsCorrect, (state, { quizId, questionId, answerId }) => state.updateIn(
+  [toggleAnswerIsCorrect, (state, { path: [quizId, questionId, answerId] }) => state.updateIn(
     ['quizzes', quizId, questionId, answerId],
     Answer(),
     answer => answer.update('isCorrect', isCorrect => !isCorrect)
@@ -30,11 +31,9 @@ export const answersReducer = Reducer(State(), [
 export default subscribe(
   answersReducer,
   {
-    setAnswerText: ({ quizId, questionId, answerId }, text) =>
-      setAnswerText({ quizId, questionId, answerId, text }),
+    setAnswerText: ({ path }, text) => setAnswerText({ path, text }),
     toggleAnswerIsCorrect,
     removeAnswer,
   },
-  ({ quizzes }, { quizId, questionId, answerId }) =>
-    quizzes.getIn([quizId, questionId, answerId], Answer())
+  ({ quizzes }, { path }) => quizzes.getIn(path, Answer())
 )(AnswerView);

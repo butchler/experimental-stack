@@ -10,8 +10,7 @@ export default withFunctions({
 })(QuestionView);
 
 function QuestionView({
-  quizId,
-  questionId,
+  path,
   text,
   answerIds,
   addAnswer,
@@ -24,7 +23,7 @@ function QuestionView({
 
       <ol>
         {answerIds.map(id =>
-          <li key={id}><Answer quizId={quizId} questionId={questionId} answerId={id} /></li>)}
+          <li key={id}><Answer path={[...path, id]} /></li>)}
       </ol>
 
       <button onClick={addAnswer}>Add answer</button>
@@ -34,8 +33,7 @@ function QuestionView({
 }
 
 QuestionView.propTypes = {
-  quizId: PropTypes.string.isRequired,
-  questionId: PropTypes.string.isRequired,
+  path: PropTypes.arrayOf(PropTypes.string).isRequired,
   text: PropTypes.string,
   answerIds: ImmutablePropTypes.listOf(PropTypes.string).isRequired,
   addAnswer: PropTypes.func.isRequired,

@@ -3,7 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import Question from 'components/Question';
 
 export default function QuizView({
-  quizId,
+  path,
   questionIds,
   addQuestion,
   removeQuiz,
@@ -13,7 +13,7 @@ export default function QuizView({
       {questionIds.map((id, index) =>
         <div key={id}>
           <h4>Question {index + 1}</h4>
-          <Question quizId={quizId} questionId={id} />
+          <Question path={[...path, id]} />
         </div>
       )}
 
@@ -24,7 +24,7 @@ export default function QuizView({
 }
 
 QuizView.propTypes = {
-  quizId: PropTypes.string.isRequired,
+  path: PropTypes.arrayOf(PropTypes.string).isRequired,
   questionIds: ImmutablePropTypes.listOf(PropTypes.string).isRequired,
   addQuestion: PropTypes.func.isRequired,
   removeQuiz: PropTypes.func.isRequired,
