@@ -1,19 +1,18 @@
 /* global window, document */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import GlobalStore from 'globals/store';
-import Provider from 'helpers/Provider';
+import { dispatch, getState, getActions, finalizeStore } from 'globals/store';
 import QuizList from 'components/QuizList';
 import { init } from 'constants/actions';
 
-const store = GlobalStore.createStoreInstance();
-window.getState = store.getReducerStates;
+window.getState = getState;
+window.getActions = getActions;
 
-store.dispatch(init());
+finalizeStore();
+
+dispatch(init());
 
 ReactDOM.render(
-  <Provider store={store}>
-    <QuizList />
-  </Provider>,
+  <QuizList />,
   document.getElementById('app-container')
 );

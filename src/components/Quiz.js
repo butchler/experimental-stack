@@ -1,13 +1,12 @@
 import { Record, List, Map } from 'immutable';
-import { Reducer } from 'globals/store';
-import subscribe from 'helpers/subscribe';
+import { Reducer, subscriber } from 'globals/store';
 import { removeQuiz, addQuestion, removeQuestion } from 'constants/actions';
 import QuizView from './QuizView';
 
 const State = Record({ quizzes: Map() });
 const Quiz = Record({ questionIds: List(['first']) });
 
-export const quizzesReducer = Reducer(State(), [
+export const quizzesReducer = Reducer('Quizzes', State(), [
   [removeQuiz, (state, { path: [quizId] }) => state.removeIn(['quizzes', quizId])],
   [addQuestion, (state, { path: [quizId, questionId] }) => state.updateIn(
     ['quizzes', quizId],
@@ -21,9 +20,7 @@ export const quizzesReducer = Reducer(State(), [
   )],
 ]);
 
-export default subscribe(
-  quizzesReducer,
-  { addQuestion, removeQuiz },
-  // TODO: Maybe use a getPath function instead of a mapStateAndPropsToProps function?
-  ({ quizzes }, { path }) => quizzes.getIn(path, Quiz())
-)(QuizView);
+export default subscriber(quizzesReducer, {
+  actions: { addQuestion, removeQuiz },
+  mapState: ({ quizzes }, { path }) => quizzes.getIn(path, Quiz()),
+})(QuizView);

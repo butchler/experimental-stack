@@ -1,6 +1,5 @@
 import { Record, Map } from 'immutable';
-import { Reducer } from 'globals/store';
-import subscribe from 'helpers/subscribe';
+import { Reducer, subscriber } from 'globals/store';
 import {
   removeQuiz, removeQuestion, removeAnswer, setAnswerText, toggleAnswerIsCorrect,
 } from 'constants/actions';
@@ -9,7 +8,7 @@ import AnswerView from './AnswerView';
 const State = Record({ quizzes: Map() });
 const Answer = Record({ text: '', isCorrect: false });
 
-export const answersReducer = Reducer(State(), [
+export const answersReducer = Reducer('Answers', State(), [
   [removeQuiz, (state, { path: [quizId] }) => state.removeIn(['quizzes', quizId])],
   [removeQuestion, (state, { path: [quizId, questionId] }) =>
     state.removeIn(['quizzes', quizId, questionId])],
@@ -28,12 +27,11 @@ export const answersReducer = Reducer(State(), [
   )],
 ]);
 
-export default subscribe(
-  answersReducer,
-  {
+export default subscriber(answersReducer, {
+  actions: {
     setAnswerText: ({ path }, text) => setAnswerText({ path, text }),
     toggleAnswerIsCorrect,
     removeAnswer,
   },
-  ({ quizzes }, { path }) => quizzes.getIn(path, Answer())
-)(AnswerView);
+  mapState: ({ quizzes }, { path }) => quizzes.getIn(path, Answer()),
+})(AnswerView);
