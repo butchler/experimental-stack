@@ -1,18 +1,18 @@
 import { PropTypes } from 'react';
 import { Record } from 'immutable';
-import { Reducer } from 'globals/store';
+import { Reducer, subscriber } from 'globals/store';
 import { withTasks, task } from 'helpers/react-task';
 import fetch from 'helpers/fetch';
-import { subscribe } from 'helpers/subscribe';
 import { setGoalItems, setGoalError } from 'constants/actions';
 import { GOAL_URL } from 'constants/config';
 import GoalLoaderView from './GoalLoaderView';
+import { do } from 'helpers/observable';
 
 const State = Record({ goalLoaded: false, errorMessage: null });
 
 export const goalLoaderReducer = Reducer(State(), [
-  [setGoalItems, () => set(State({ goalLoaded: true }))],
-  [setGoalError, errorMessage => set(State({ goalLoaded: false, errorMessage }))],
+  [setGoalItems, () => State({ goalLoaded: true })],
+  [setGoalError, errorMessage => State({ goalLoaded: false, errorMessage })],
 ]);
 
 const mapPropsToTasks = ({ setGoalItems, setGoalError }) => [
@@ -24,7 +24,7 @@ const taskPropTypes = {
 };
 
 const loadGoal = getProps =>
-  getProps().fetchGoal().do(
+  getProps().fetchGoal()::do(
     null,
     error => getProps().setGoalError('Error fetching goal data: ' + error),
     request => {
@@ -52,6 +52,8 @@ const parseGoalItems = goalJSON => (
   }))
 );
 
-export default subscribe(goalLoaderReducer, { setGoalItems, setGoalError })(
+export default subscriber(goalLoaderReducer, {
+  actions: { setGoalItems, setGoalError }
+})(
   withTasks(mapPropsToTasks, taskPropTypes)(GoalLoaderView)
 );
