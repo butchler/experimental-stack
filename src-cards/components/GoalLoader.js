@@ -2,11 +2,10 @@ import { PropTypes } from 'react';
 import { Record } from 'immutable';
 import { Reducer, subscriber } from 'globals/store';
 import { withTasks, task } from 'helpers/react-task';
-import fetch from 'helpers/fetch';
 import { setGoalItems, setGoalError } from 'constants/actions';
 import { GOAL_URL } from 'constants/config';
+import { do, fetch } from 'helpers/observable';
 import GoalLoaderView from './GoalLoaderView';
-import { do } from 'helpers/observable';
 
 const State = Record({ goalLoaded: false, errorMessage: null });
 
@@ -26,7 +25,7 @@ const taskPropTypes = {
 const loadGoal = getProps =>
   getProps().fetchGoal()::do(
     null,
-    error => getProps().setGoalError('Error fetching goal data: ' + error),
+    error => getProps().setGoalError(`Error fetching goal data: ${error}`),
     request => {
       if (request.status === 200 && request.response) {
         let items;
@@ -34,13 +33,14 @@ const loadGoal = getProps =>
         try {
           items = parseGoalItems(request.response);
         } catch (error) {
-          getProps().setGoalError('There was a problem parsing the goal data.');
+          getProps().setGoalError(`There was a problem parsing the goal data: ${error}`);
           return;
         }
 
         getProps().setGoalItems(items);
       } else {
-        getProps().setGoalError('There was a problem loading the goal data.');
+        getProps().setGoalError(
+          `There was a problem loading the goal data. (Request status ${request.status})`);
       }
     }
   );

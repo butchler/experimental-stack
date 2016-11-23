@@ -1,27 +1,35 @@
 /* global window */
 import { connect } from 'react-redux';
-import { withTasks, task, delay } from 'react-task';
+import { withTasks, task } from 'react-task';
 import playUrl from 'helpers/audio';
 import { SELECTION_DELAY } from 'constants/config';
-import { unflipCards, updateGameTimer, quitGame } from 'constants/actions';
+import { unflipCards, updateGameTimer, quitGame, showResults } from 'constants/actions';
 import { GAME } from 'reducers/app';
+import { do, delay } from 'helpers/observable';
 import GameView from './GameView';
 
-export function reduceGame(gameState, gameTimer) {
+export function reduceGame(gameState, gameTimer, items) {
   return {
     ...gameState,
+    allItemsMatched: !!items && items.every(item => item.matched),
     timeElapsed: gameTimer.timeElapsedString,
   };
 }
 
 export default connect(
   state => state[GAME],
-  { unflipCards, updateGameTimer, quitGame }
+  { unflipCards, updateGameTimer, quitGame, showResults }
 )(withTasks(mapPropsToTasks)(GameView));
 
 // Asynchronous tasks
 function mapPropsToTasks({
-  unflipCards, firstCardId, secondCardId, updateGameTimer, lastItemMatched,
+  unflipCards,
+  firstCardId,
+  secondCardId,
+  updateGameTimer,
+  lastItemMatched,
+  allItemsMatched,
+  showResults,
 }) {
   return [
     firstCardId && secondCardId && task(unflipCardsAfterDelay, {
@@ -40,6 +48,7 @@ function mapPropsToTasks({
       item: lastItemMatched,
       playUrl,
     }),
+    allItemsMatched && task(showResultsAfterDelay, { showResults, delay }),
   ];
 }
 
@@ -67,3 +76,6 @@ function* playItemSound(getProps) {
     yield getProps.playUrl(item.sound);
   }
 }
+
+const showResultsAfterDelay = getProps =>
+  getProps().delay(SHOW_RESULTS_DELAY)::do(() => getProps().showResults());

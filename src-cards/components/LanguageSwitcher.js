@@ -1,7 +1,5 @@
 import { Record } from 'immutable';
-import { Reducer } from 'globals/store';
-import subscribe from 'helpers/subscribe';
-import { set } from 'helpers/mutators';
+import { Reducer, subscriber } from 'globals/store';
 import { LANGUAGES } from 'constants/i18n';
 import { setLanguage } from 'constants/actions';
 import LanguageSwitcherView from './LanguageSwitcherView';
@@ -9,7 +7,9 @@ import LanguageSwitcherView from './LanguageSwitcherView';
 const State = Record({ languages: LANGUAGES, currentLanguage: 'en' });
 
 export const languageSwitcherReducer = Reducer(State(), [
-  [setLanguage, language => set('currentLanguage', language)],
+  [setLanguage, (state, language) => state.set('currentLanguage', language)],
 ]);
 
-export default subscribe(languageSwitcherReducer, { setLanguage })(LanguageSwitcherView);
+export default subscriber(languageSwitcherReducer, {
+  actions: { setLanguage },
+})(LanguageSwitcherView);
