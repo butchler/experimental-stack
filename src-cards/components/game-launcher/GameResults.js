@@ -1,9 +1,15 @@
-import { connect } from 'react-redux';
-import { GAME_RESULTS } from 'reducers/app';
+import { Record } from 'immutable';
+import { Reducer, subscriber } from 'globals/store';
+import gameStateReducer from 'reducers/gameState';
+import gameTimerReducer from 'reducers/gameTimer';
 import GameResultsView from './GameResultsView';
 
-export function reduceGameResults(items, timeElapsed, numAttempts) {
-  return { items, timeElapsed, numAttempts };
-}
+export const gameResultsReducer = Reducer('GameResults', State(), [
+  [gameStateReducer, (state, gameState) => state.merge({
+    items: gameState.items,
+    numAttempts: gameState.numAttempts,
+  })],
+  [gameTimerReducer, (state, gameTimer) => state.set('timeElapsed', gameTimer.timeElapsedString)],
+]);
 
-export default connect(state => state[GAME_RESULTS])(GameResultsView);
+export default subscriber(gameResultsReducer)(GameResultsView);

@@ -11,7 +11,7 @@ const State = Record({ goalLoaded: false, errorMessage: null });
 
 export const goalLoaderReducer = Reducer(State(), [
   [setGoalItems, () => State({ goalLoaded: true })],
-  [setGoalError, errorMessage => State({ goalLoaded: false, errorMessage })],
+  [setGoalError, (state, errorMessage) => State({ goalLoaded: false, errorMessage })],
 ]);
 
 const mapPropsToTasks = ({ setGoalItems, setGoalError }) => [
